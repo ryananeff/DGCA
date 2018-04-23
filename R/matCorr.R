@@ -9,27 +9,29 @@
 #' data(darmanis); darmanis_subset = darmanis[1:30, ]
 #' matcor_res = matCorr(matA = darmanis_subset, corrType = "pearson")
 #' @export
+
 matCorr <- function(matA, corrType, use = "pairwise.complete.obs", matB = NULL, secondMat = FALSE){
 
 	if(!secondMat){
 		if(corrType %in% "pearson"){
-			corrs = WGCNA::cor(matA, use = use)
+			corrs = cor(matA,use=use,method="pearson")
 		}
 		if(corrType %in% "spearman"){
-			corrs = WGCNA::cor(matA, use = use, method = "spearman")
+			corrs = cor(matA,use=use,method="spearman")
 		}
 	}
 
 	if(secondMat){
 		if(corrType %in% "pearson"){
-			corrs = WGCNA::cor(matA, matB, use = use)
+			corrs = cor(matA,matB,use=use,method="pearson")
 		}
 		if(corrType %in% "spearman"){
-		  corrs = WGCNA::cor(matA, matB, use = use,
-				method = "spearman")
+		  corrs = cor(matA,matB,use=use,method="spearman")
 		}
 	}
 
 	return(corrs)
 
 }
+
+###

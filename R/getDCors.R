@@ -8,14 +8,14 @@
 #' @param corrType The correlation type of the analysis, limited to "pearson" or "spearman".
 #' @param corr_cutoff Cutoff specifying correlation values beyond which will be truncated to this value, to reduce the effect of outlier correlation values when using small sample sizes.
 #' @param signType Coerce all correlation coefficients to be either positive (via "positive"), negative (via "negative"), or none (via "none"). This could be used if you think that going from a positive to a negative correlation is unlikely to occur biologically and is more likely to be due to noise, and you want to ignore these effects. Note that this does NOT affect the reported underlying correlation values, but does affect the z-score difference of correlation calculation. Default = "none", for no coercing.
-#' @param cl Specify a parallel backend for computation, e.g. cl = parallel::makeCluster(num_cores).
 #' @return A dcPair class object, containing the difference in z-scores for each comparison, the p-values of that differences, and the original correlation matrices and significances for subsequent classification steps.
 #' data(darmanis); data(design_mat); darmanis_subset = darmanis[1:30, ]
 #' dcors_res = getDCors(inputMat = darmanis_subset, design = design_mat, compare = c("oligodendrocyte", "neuron"))
 #'
 #' @export
 getDCors <- function(inputMat, design, compare, inputMatB = NULL, impute = FALSE, corrType = "pearson",
-	corr_cutoff = 0.99, signType = "none",cl=NULL){
+	corr_cutoff = 0.99, signType = "none",cl=FALSE){
+	design = design[,compare] #subset the matrix HERE to dramatically reduce the # of computations
 
 	corMats_res = getCors(inputMat = inputMat, design = design, inputMatB = inputMatB, corrType = corrType,
 		impute = impute,cl=cl)

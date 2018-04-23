@@ -40,13 +40,11 @@ bigEmpPVals <- function(stat, stat0, increasing = TRUE){
     p[(m-n_zeros+1):m] = runif(n_zeros, min = first_zero, max = 1)
   }
 
-  #match to the original test stats; randomly in the case of ties to avoid double-counting and introducing redundancy
+  #match to the original test stats; since we've already added fuzz, this should be very fast
   if(increasing){
-    stat = sort(-stat,method="radix")
-    p = p[rank(-stat, ties.method = "random",)]
+    p = p[order(order(-stat,method="radix"))]
   } else {
-    stat = sort(stat,method="radix")
-    p = p[rank(stat, ties.method = "random")]
+    p = p[order(order(stat,method="radix"))]
   }
 
   #correct numbers so that the actual test stats that are greater than all of the nulls can only have a min p-value of at most 1/#null test stats

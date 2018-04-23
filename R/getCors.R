@@ -5,13 +5,12 @@
 #' @param impute A binary variable specifying whether values should be imputed if there are missing values. Note that the imputation is performed in the full input matrix (i.e., prior to subsetting) and uses k-nearest neighbors.
 #' @param design A standard model.matrix created design matrix. Rows correspond to samples and colnames refer to the names of the conditions that you are interested in analyzing. Only 0's or 1's are allowed in the design matrix. Please see vignettes for more information.
 #' @param corrType The correlation type of the analysis, limited to "pearson" or "spearman". Default = "pearson".
-#' @param cl Specify a parallel backend for computation, e.g. cl = parallel::makeCluster(num_cores).
 #' @return A corMats S4 class object, containing a list of matrices from each group, the design matrix, and a character vector of options.
 #' @examples
 #' data(darmanis); data(design_mat); darmanis_subset = darmanis[1:30, ]
 #' cors_res = getCors(inputMat = darmanis_subset, design = design_mat)
 #' @export
-getCors <- function(inputMat, design, inputMatB = NULL, impute = FALSE,corrType = "pearson",cl=NULL){
+getCors <- function(inputMat, design, cl=NULL, inputMatB = NULL, impute = FALSE, corrType = "pearson"){
 
 	##############################
 	#set SAF to FALSE while restoring to default when the function is finished
@@ -81,40 +80,30 @@ getCors <- function(inputMat, design, inputMatB = NULL, impute = FALSE,corrType 
 		#create list of lists to store the results
 		groupMatLists = as.list(rep(NA, length(groupList)))
 		names(groupMatLists) = designRes[[2]]
-		
+
 		###################################
 		#calculate the correlation-related matrices for each of the sub-matrices
-		#corr <<- corr
-		#nsamp <<- nsamp
-		
-		# clusterEvalQ(cl,library(Rcpp))
-		# clusterExport(cl,c('matCorr','matNSamp','matCorSig'))
-		# clusterExport(cl,'corrType',envir=environment())
-		# clusterExport(cl,'impute',envir=environment())
-		# #clusterExport(cl,'groupList')
-		# 
-		# docalc = function(ingroup,corrType,impute){
-		#   corr = matCorr(t(ingroup), corrType = corrType)
-		#   nsamp = matNSamp(t(ingroup), impute = impute)
-		#   pval = matCorSig(corr, nsamp)
-		#   return(list(corrs = corr, pvals = pval, nsamps = nsamp))
-		# }
-		# clusterExport(cl,'docalc',envir=environment())
-		# 
-		# groupMatLists = clusterApply(cl=cl, x=groupList, fun=function(ingroup){docalc(ingroup,corrType,impute)})
-		# names(groupMatLists) = designRes[[2]]
-		# groupMatLists <<- groupMatLists
-		
-		for(i in 1:length(groupList)){
-		  
-		  #for extensibility, the first two fxns below can accept multiple matrices
-		  corr = matCorr(t(groupList[[i]]), corrType = corrType)
-		  nsamp = matNSamp(t(groupList[[i]]), impute = impute)
-		  pval = matCorSig(corr, nsamp)
-		  
-		  groupMatLists[[i]] = list(corrs = corr, pvals = pval, nsamps = nsamp)
-		  
+		calcCorrs <- function(group,corrType,impute){
+				#for extensibility, the first two fxns below can accept multiple matrices
+				corr = matCorr(t(group), corrType = corrType)
+				nsamp = matNSamp(t(group), impute = impute)
+				pval = matCorSig.fuzz(corr, nsamp)
+
+				return(list(corrs = corr, pvals = pval, nsamps = nsamp))
+			}
+		if(!identical(cl,FALSE)){
+			clusterExport(cl=cl,c("matCorr","matNSamp","matCorSig.fuzz"))
+			groupMatLists = parLapply(cl=cl,groupList,calcCorrs,
+			                          corrType=corrType,impute=impute)
+			names(groupMatLists) = designRes[[2]]
+			groupMatLists <<- groupMatLists
+		}else{
+			for(i in 1:length(groupList)){
+				groupMatLists[[i]] = calcCorrs(groupList[[i]],corrType,impute)
+			}
+			groupMatLists_bak <<- groupMatLists
 		}
+
 	}
 
 	####################################
@@ -144,7 +133,7 @@ getCors <- function(inputMat, design, inputMatB = NULL, impute = FALSE,corrType 
 			nsamp = matNSamp(matA = t(groupListA[[i]]), impute = impute,
 				matB = t(groupListB[[i]]), secondMat = TRUE)
 
-			pval = matCorSig(corr, nsamp, secondMat = TRUE)
+			pval = matCorSig.fuzz(corr, nsamp, cl=cl, secondMat = TRUE)
 
 			groupMatLists[[i]] = list(corrs = corr, pvals = pval, nsamps = nsamp)
 

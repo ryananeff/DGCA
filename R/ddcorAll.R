@@ -19,7 +19,6 @@
 #' @param customize_heatmap Option to remove some default options in the heatmap plot, to allow users to add custom options.
 #' @param color_palette Color palette for plotting the heatmap. If not specified, the heatmap defaults to a red-green color-blind palette with bluish green indicating negative correlations and vermillion indicating positive correlations. Default = NULL
 #' @param heatmapClassic Option to make the heatmap more granular (e.g., not showing the individual gene symbols) and more of a "classic" type of heatmap. Overrides most other heatmap options.
-#' @param cl Specify a parallel backend for computation, e.g. cl = parallel::makeCluster(num_cores).
 #' @param corPower The power to raise the correlations to before plotting the classic heatmap. Larger correlation powers emphasize larger correlation values relatively more compared to smaller correlation values.
 #' @param verbose Option indicating whether the program should give more frequent updates about its operations. Default = FALSE.
 #' @param corr_cutoff Cutoff specifying correlation values beyond which will be truncated to this value, to reduce the effect of outlier correlation values when using small sample sizes. Note that this does NOT affect the underlying correlation values, but does affect the z-score difference of correlation calculation in the dcTopPairs table. Default = 0.99
@@ -41,7 +40,7 @@ ddcorAll <- function(inputMat, design, compare, inputMatB = NULL, splitSet = NUL
 	corSigThresh = 0.05, heatmapPlot = FALSE, color_palette = NULL, verbose = FALSE, plotFdr = FALSE,
 	corr_cutoff = 0.99, signType = "none", getDCorAvg = FALSE, dCorAvgType = "gene_average",
 	dCorAvgMethod = "median", oneSidedPVal = FALSE, customize_heatmap = FALSE,
-	heatmapClassic = FALSE, corPower = 2, cl=NULL,...){
+	heatmapClassic = FALSE, corPower = 2, cl=NULL, ...){
 
 	################################
 	# check inputs
@@ -120,13 +119,13 @@ ddcorAll <- function(inputMat, design, compare, inputMatB = NULL, splitSet = NUL
 	ddcor_res = getDCors(inputMat = inputMat, design = design,
 		compare = compare, inputMatB = inputMatB,
 		impute = impute, corrType = corrType, corr_cutoff = corr_cutoff,
-		signType = signType,cl=cl)
+		signType = signType, cl=cl)
 
 	if(nPerms > 0){
 		ddcor_perm = getDCorPerm(inputMat = inputMat, design = design,
 			compare = compare, inputMatB = inputMatB,
 			impute = impute, corrType = corrType, nPerms = nPerms,
-			corr_cutoff = corr_cutoff, signType = signType,cl=cl)
+			corr_cutoff = corr_cutoff, signType = signType, cl=cl)
 	}
 
 	##############################

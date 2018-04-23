@@ -9,7 +9,6 @@
 #' @param nPerms Number of permutations to generate.
 #' @param corr_cutoff Cutoff specifying correlation values beyond which will be truncated to this value, to reduce the effect of outlier correlation values when using small sample sizes. Default = 0.99
 #' @param signType Coerce all correlation coefficients to be either positive (via "positive"), negative (via "negative"), or none (via "none"). This could be used if you think that going from a positive to a negative correlation is unlikely to occur biologically and is more likely to be due to noise, and you want to ignore these effects. Note that this does NOT affect the reported underlying correlation values, but does affect the z-score difference of correlation calculation. Default = "none", for no coercing.
-#' @param cl Specify a parallel backend for computation, e.g. cl = parallel::makeCluster(num_cores).
 #' @return An array of permuted differences in z-scores calculated between conditions, with the third dimension corresponding to the number of permutations performed.
 #' @export
 getDCorPerm <- function(inputMat, design, compare, inputMatB = NULL, impute = FALSE,
@@ -23,23 +22,53 @@ getDCorPerm <- function(inputMat, design, compare, inputMatB = NULL, impute = FA
 		zPermMat = array(dim = c(nrow(inputMat), nrow(inputMat), nPerms))
 	}
 
-	for(i in 1:nPerms){
-		message("Calculating permutation number ", i, ".")
+	calcZscores <- function(iter,inputMat, design, compare, inputMatB = NULL, impute = FALSE,
+	 corrType = "pearson", corr_cutoff = 0.99, signType = "none",clus=NULL,secondMat=FALSE){
+		message("Calculating permutation number ", iter, ".")
 		inputMat_perm = inputMat[ , sample(ncol(inputMat)), drop = FALSE]
 		if(secondMat){
 			inputMatB_perm = inputMatB[ , sample(ncol(inputMatB)), drop = FALSE]
 			corMats_res = getCors(inputMat_perm, design = design,
-				inputMatB = inputMatB_perm, corrType = corrType, impute = impute,cl=cl)
+				inputMatB = inputMatB_perm, corrType = corrType, impute = impute,cl=clus)
 		} else {
 			corMats_res = getCors(inputMat_perm, design = design,
-				corrType = corrType, impute = impute,cl=cl)
+				corrType = corrType, impute = impute,cl=clus)
 		}
 		dcPairs_res = pairwiseDCor(corMats_res, compare, corr_cutoff = corr_cutoff,
 			secondMat = secondMat, signType = signType)
 		zscores = slot(dcPairs_res, "ZDiff")
-		zPermMat[ , , i] = zscores
+		return(zscores)
 	}
 
+	if(!identical(cl,FALSE)){
+		clusterExport(cl=cl,c("getCors","pairwiseDCor","getGroupsFromDesign","clusterExport",
+		                      "dCorMats","dCorrs"))
+		zPermMatList = parLapply(cl,1:nPerms,calcZscores,
+		                         inputMat=inputMat,design=design,compare=compare,
+		                         inputMatB=inputMatB,impute=impute,corrType=corrType,
+		                         corr_cutoff=corr_cutoff,signType=signType,clus=FALSE,
+		                         secondMat=secondMat)
+		for (i in 1:nPerms){
+			zPermMat[ , , i] = zPermMatList[[i]]
+		}
+	}else{
+		for(i in 1:nPerms){
+			message("Calculating permutation number ", i, ".")
+			inputMat_perm = inputMat[ , sample(ncol(inputMat)), drop = FALSE]
+			if(secondMat){
+				inputMatB_perm = inputMatB[ , sample(ncol(inputMatB)), drop = FALSE]
+				corMats_res = getCors(inputMat_perm, design = design,
+					inputMatB = inputMatB_perm, corrType = corrType, impute = impute,cl=FALSE)
+			} else {
+				corMats_res = getCors(inputMat_perm, design = design,
+					corrType = corrType, impute = impute,cl=FALSE)
+			}
+			dcPairs_res = pairwiseDCor(corMats_res, compare, corr_cutoff = corr_cutoff,
+				secondMat = secondMat, signType = signType)
+			zscores = slot(dcPairs_res, "ZDiff")
+			zPermMat[ , , i] = zscores
+		}
+	}
 	return(zPermMat)
 
 }

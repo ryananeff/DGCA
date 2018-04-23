@@ -36,12 +36,16 @@ pairwiseDCor <- function(corMatsObj, compare, corr_cutoff = 0.99, corrType = "pe
 		AB_res$diffs, AB_res$pvals)
 	names(dcPair) = c("corA", "corPvalA", "corB", "corPvalB",
 		"ZDiff", "PValDiff")
+	
+	matA <<- matA
+	matB <<- matB
+	AB_res <<- AB_res
 
 	dcPair_res = new("dcPair",
 		corA = matA$corrs,
-		corPvalA = matA$pvals,
+		corPvalA = matA$pvals, #this is a list, should be a matrix
 		corB = matB$corrs,
-		corPvalB = matB$pvals,
+		corPvalB = matB$pvals, #this is a list, should be a matrix
 		ZDiff = AB_res$diffs,
 		PValDiff = AB_res$pvals)
 
