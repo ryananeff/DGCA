@@ -27,6 +27,7 @@
 #' @param dCorAvgMethod Character vector specifying the method for calculating the "average" differential correlation calculation that should be used. Options = "median", "mean".
 #' @param signType Coerce all correlation coefficients to be either positive (via "positive"), negative (via "negative"), or none (via "none") prior to calculating differential correlation. This could be used if, e.g., you think that going from a positive to a negative correlation is unlikely to occur biologically and is more likely to be due to noise, and you want to ignore these effects. Note that this does NOT affect the reported underlying correlation values, but does affect the z-score difference of correlation calculation. Default = "none", for no coercing.
 #' @param oneSidedPVal If the dCorAvgType test is total_average, this option specifies whether a one-sided p-value should be reported, as opposed to a two-sided p-value. That is, if the average difference of z-scores is greater than zero, test whether the permutation average difference of z-scores are less than that average to get the p-value, and vice versa for the case that the average difference of z-scores is less than 0. Otherwise, test whether the absolute value of the average difference in z-scores is greater than the absolute values of the permutation average difference in z-scores. Default = FALSE.
+#' @param cl A parallel cluster object created by parallel::makeCluster(). If FALSE, defaults to single-core implementation.
 #' @param ... Additional plotting arguments if heatmapPlot = TRUE.
 #' @return Typically, the returned object is a data frame of the table of differential correlations between conditions. In the case that dCorAvg is calculated, the returned object is instead a list containing that table as well as the object summarizing the difference in average correlation for the specified portion of the data set.
 #' @examples
@@ -35,7 +36,7 @@
 #' 	compare = c("oligodendrocyte", "neuron"))
 #' @export
 ddcorAll <- function(inputMat, design, compare, inputMatB = NULL, splitSet = NULL,
-	impute = FALSE, corrType = "pearson", nPairs = "all", sortBy = "zScoreDiff",
+	impute = FALSE, corrType = "pearson", nPairs = Inf, sortBy = "zScoreDiff",
 	adjust = "perm", nPerms = 10, classify = TRUE, sigThresh = 1,
 	corSigThresh = 0.05, heatmapPlot = FALSE, color_palette = NULL, verbose = FALSE, plotFdr = FALSE,
 	corr_cutoff = 0.99, signType = "none", getDCorAvg = FALSE, dCorAvgType = "gene_average",
@@ -44,6 +45,10 @@ ddcorAll <- function(inputMat, design, compare, inputMatB = NULL, splitSet = NUL
 
 	################################
 	# check inputs
+    
+    if (nPairs=="all"){ # for compatibility with previous versions 
+        nPairs = Inf
+    }
 
 	if(!is.null(splitSet)){
 		if(!mode(splitSet) == "character") stop("splitSet must be character type.\n")
@@ -69,11 +74,11 @@ ddcorAll <- function(inputMat, design, compare, inputMatB = NULL, splitSet = NUL
 		stop("nPairs must either be numeric or be a character vector \"all\" to specify that all pairs should be returned.")
 	}
 
-	if(nPairs == "all" & is.null(inputMatB)){
+	if(nPairs == Inf & is.null(inputMatB)){
 		nPairs = (nrow(inputMat)^2)/2 - nrow(inputMat)/2
 	}
 
-	if(nPairs == "all" & !is.null(inputMatB)){
+	if(nPairs == Inf & !is.null(inputMatB)){
 		nPairs = nrow(inputMat) * nrow(inputMatB)
 	}
 

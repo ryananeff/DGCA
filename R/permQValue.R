@@ -67,7 +67,7 @@ permQValue <- function(dcObject, permObject, secondMat, testSlot,
           })
       })
     })
-  qobj<<-qobj
+
   if(verbose) summary(qobj)
   if(plotFdr) plot(qobj)
 

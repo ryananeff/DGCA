@@ -9,6 +9,7 @@
 #' @param nPerms Number of permutations to generate.
 #' @param corr_cutoff Cutoff specifying correlation values beyond which will be truncated to this value, to reduce the effect of outlier correlation values when using small sample sizes. Default = 0.99
 #' @param signType Coerce all correlation coefficients to be either positive (via "positive"), negative (via "negative"), or none (via "none"). This could be used if you think that going from a positive to a negative correlation is unlikely to occur biologically and is more likely to be due to noise, and you want to ignore these effects. Note that this does NOT affect the reported underlying correlation values, but does affect the z-score difference of correlation calculation. Default = "none", for no coercing.
+#' @param cl A parallel cluster object created by parallel::makeCluster(). If FALSE, defaults to single-core implementation.
 #' @return An array of permuted differences in z-scores calculated between conditions, with the third dimension corresponding to the number of permutations performed.
 #' @export
 getDCorPerm <- function(inputMat, design, compare, inputMatB = NULL, impute = FALSE,

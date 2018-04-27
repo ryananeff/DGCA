@@ -11,6 +11,7 @@
 #' @param verbose Whether summaries of the operations should be reported.
 #' @param compare Vector of two character strings, each corresponding to one group name in the design matrix, that should be compared.
 #' @param secondMat Logical indicator of whether there is a second matrix in the comparison or not.
+#' @param cl A parallel cluster object created by parallel::makeCluster(). If FALSE, defaults to single-core implementation.
 #' @return A table containing columns for each name in the considered gene pair (the order of which is arbitrary), correlation values in each condition, differences in z-score of the correlation, and p-values for that z-score difference.
 #' @export
 dcTopPairs <- function(dcObject, nPairs, adjust = "none", plotFdr = FALSE,

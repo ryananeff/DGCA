@@ -1,8 +1,8 @@
 ---
 title: "Basic differential correlation analysis using DGCA"
-author: "Andrew McKenzie, Bin Zhang"
+author: "Andrew McKenzie, Ryan Neff, Bin Zhang"
 date compiled: "`r Sys.Date()`"
-date: November 2, 2016
+date: April 27, 2018
 output: 
   rmarkdown::html_vignette: 
     number_sections: no
@@ -41,12 +41,21 @@ data(design_mat)
 
 Note that the design matrix is a standard design matrix as used in other packages (e.g., limma, DESEq, MatrixEQTL), and specifies the group indices to be extracted from the original columns. 
 
+Next, we will create a cluster of R threads using doParallel for parallel DGCA analysis, which offers a significant speedup on multi-threaded machines and large datasets. 
+
+```{r, results="hide", warning=FALSE, message=FALSE}
+library(doParallel)
+no_cores <- 8 #set this to the number of cores that you have available
+cl<-makeCluster(no_cores)
+registerDoParallel(cl)
+```
+
 To run the full differential correlation analysis and extract all of the top differentially correlated pairs, run this: 
 
 ```{r, message = FALSE}
 ddcor_res = ddcorAll(inputMat = darmanis, design = design_mat,
   compare = c("oligodendrocyte", "neuron"),
-  adjust = "none", nPerm = 0, nPairs = 100)
+  adjust = "none", nPerm = 0, nPairs = Inf, cl=cl)
 head(ddcor_res)
 ```
 
@@ -55,7 +64,7 @@ To run the full differential correlation analysis to find the top differentially
 ```{r, fig.width = 7, fig.height = 7, message = FALSE, warning = FALSE}
 ddcor_res = ddcorAll(inputMat = darmanis, design = design_mat,
   compare = c("oligodendrocyte", "neuron"),
-  adjust = "perm", nPerm = 5, splitSet = "RTN4")
+  adjust = "perm", nPerm = 5, splitSet = "RTN4", nPairs=Inf, cl=cl)
 head(ddcor_res)
 ```
 

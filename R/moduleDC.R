@@ -13,6 +13,7 @@
 #' @param nPerms Number of permutations to generate in order to calculate the significance of the result.
 #' @param gene_avg_signif The gene average differential correlation significance (adjusted for MHTC) required in order for the a gene to be reported as having a gain or loss in connectivity.
 #' @param number_DC_genes The number of top differentially correlated genes with more correlation in each condition in each module to return in the data frame.
+#' @param cl A parallel cluster object created by parallel::makeCluster(). If FALSE, defaults to single-core implementation.
 #' @return A data frame with the module labels, the average change in difference in z-score between conditions (i.e., one measure of the modular average differential connectivity, or MeDC), and the empirical p-value for the significance of the change in correlation.
 #' @examples
 #' data(darmanis)
@@ -26,7 +27,7 @@
 #' @export
 moduleDC <- function(inputMat, design, compare, genes, labels, corr_cutoff = 0.99, signType = "none",
   corrType = "pearson", nPerms = 50, oneSidedPVal = FALSE, gene_avg_signif = 0.05,
-  number_DC_genes = 3, dCorAvgMethod = "median"){
+  number_DC_genes = 3, dCorAvgMethod = "median",cl=NULL){
 
   if(!length(genes) == length(labels)) stop("Genes and labels vectors must be the same length.")
 
@@ -47,7 +48,7 @@ moduleDC <- function(inputMat, design, compare, genes, labels, corr_cutoff = 0.9
     ddcor_res = ddcorAll(inputMat = inputMat_tmp, design = design, compare = compare,
       corrType = corrType, signType = signType,
       adjust = "none", nPerms = nPerms, getDCorAvg = TRUE,
-      dCorAvgType = "both", classify = FALSE, dCorAvgMethod = dCorAvgMethod)
+      dCorAvgType = "both", classify = FALSE, dCorAvgMethod = dCorAvgMethod, cl=cl)
 
    mdc_vector[i] = ddcor_res[["total_avg_dcor"]][["total_zdiff"]]
    mdc_signif[i] = ddcor_res[["total_avg_dcor"]][["pVal"]]

@@ -5,12 +5,13 @@
 #' @param impute A binary variable specifying whether values should be imputed if there are missing values. Note that the imputation is performed in the full input matrix (i.e., prior to subsetting) and uses k-nearest neighbors.
 #' @param design A standard model.matrix created design matrix. Rows correspond to samples and colnames refer to the names of the conditions that you are interested in analyzing. Only 0's or 1's are allowed in the design matrix. Please see vignettes for more information.
 #' @param corrType The correlation type of the analysis, limited to "pearson" or "spearman". Default = "pearson".
+#' @param cl A parallel cluster object created by parallel::makeCluster(). If FALSE, defaults to single-core implementation.
 #' @return A corMats S4 class object, containing a list of matrices from each group, the design matrix, and a character vector of options.
 #' @examples
 #' data(darmanis); data(design_mat); darmanis_subset = darmanis[1:30, ]
 #' cors_res = getCors(inputMat = darmanis_subset, design = design_mat)
 #' @export
-getCors <- function(inputMat, design, cl=NULL, inputMatB = NULL, impute = FALSE, corrType = "pearson"){
+getCors <- function(inputMat, design, inputMatB = NULL, impute = FALSE, corrType = "pearson", cl=NULL){
 
 	##############################
 	#set SAF to FALSE while restoring to default when the function is finished
