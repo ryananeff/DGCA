@@ -1,5 +1,9 @@
 [![Travis-CI Build Status](https://travis-ci.org/andymckenzie/DGCA.svg?branch=master)](https://travis-ci.org/andymckenzie/DGCA)
 
+[![CRAN\_Status\_Badge](http://www.r-pkg.org/badges/version/ggplot2)](https://cran.r-project.org/package=DGCA)
+[![Rdoc](http://www.rdocumentation.org/badges/version/DGCA)](http://www.rdocumentation.org/packages/DGCA)
+[![Downloads](http://cranlogs.r-pkg.org/badges/grand-total/DGCA)](http://cranlogs.r-pkg.org/badges/grand-total/DGCA)
+
 # DGCA
 
 The goal of DGCA is to calculate differential correlations across conditions.
@@ -10,7 +14,13 @@ It also has several other options including calculating the average differential
 
 ## Installation
 
-You can install DGCA from github with:
+You can install DGCA from CRAN with:
+
+```R
+install.packages("DGCA")
+```
+
+You can install the development version of DGCA from github with:
 
 ```R
 # install.packages("devtools")
@@ -38,9 +48,9 @@ head(ddcor_res, 3)
 
 There are three vignettes available in order to help you learn how to use the package:
 
-- DGCA_basic: This will get you up-and-going quickly.
-- DGCA: This is a more extended version that explains a bit about how the package works and shows several of the options available in the package.
-- DGCA_modules: This will show you how to use the package to perform module-based and network-based analyses.
+- [DGCA Basic](http://htmlpreview.github.io/?https://github.com/andymckenzie/DGCA/blob/master/vignettes/DGCA_basic.html): This will get you going quickly.
+- [DGCA](http://htmlpreview.github.io/?https://github.com/andymckenzie/DGCA/blob/master/inst/doc/DGCA.html): This is a more extended version that explains a bit about how the package works and shows several of the options available in the package.
+- [DGCA Modules](https://github.com/andymckenzie/DGCA/blob/master/inst/doc/DGCA_modules.pdf): This will show you how to use the package to perform module-based and network-based analyses.
 
 The second two vignettes can be found in inst/doc.
 

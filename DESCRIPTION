@@ -15,7 +15,7 @@ Description: Performs differential correlation analysis on input
 Version: 1.0.3
 Author: Bin Zhang [aut],
     Andrew McKenzie [aut, cre],
-    Ryan Neff [edi]
+    Ryan Neff [edit]
 Maintainer: Ryan Neff <ryan.neff@icahn.mssm.edu>
 Depends: R (>= 3.2)
 Imports: WGCNA, matrixStats, methods
@@ -27,6 +27,4 @@ RoxygenNote: 5.0.1
 License: GPL-3
 LazyData: true
 NeedsCompilation: no
-Packaged: 2018-04-27 18:00:00 UTC; nosarcasm
 Repository: Github
-Date/Publication: 2018-04-27 18:00:00 UTC

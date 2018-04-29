@@ -3,6 +3,7 @@ title: "Basic differential correlation analysis using DGCA"
 author: "Andrew McKenzie, Ryan Neff, Bin Zhang"
 date compiled: "`r Sys.Date()`"
 date: April 27, 2018
+
 output: 
   rmarkdown::html_vignette: 
     number_sections: no
@@ -56,6 +57,7 @@ To run the full differential correlation analysis and extract all of the top dif
 ddcor_res = ddcorAll(inputMat = darmanis, design = design_mat,
   compare = c("oligodendrocyte", "neuron"),
   adjust = "none", nPerm = 0, nPairs = Inf, cl=cl)
+
 head(ddcor_res)
 ```
 
@@ -65,6 +67,7 @@ To run the full differential correlation analysis to find the top differentially
 ddcor_res = ddcorAll(inputMat = darmanis, design = design_mat,
   compare = c("oligodendrocyte", "neuron"),
   adjust = "perm", nPerm = 5, splitSet = "RTN4", nPairs=Inf, cl=cl)
+
 head(ddcor_res)
 ```
 
@@ -83,4 +86,3 @@ plotVals(inputMat = darmanis, design = design_mat,
 ```
 
 **References**
-
