@@ -88,12 +88,12 @@ getCors <- function(inputMat, design, inputMatB = NULL, impute = FALSE, corrType
 				#for extensibility, the first two fxns below can accept multiple matrices
 				corr = matCorr(t(group), corrType = corrType)
 				nsamp = matNSamp(t(group), impute = impute)
-				pval = matCorSig.fuzz(corr, nsamp)
+				pval = matCorSig(corr, nsamp)
 
 				return(list(corrs = corr, pvals = pval, nsamps = nsamp))
 			}
 		if(!identical(cl,FALSE)){
-			clusterExport(cl=cl,c("matCorr","matNSamp","matCorSig.fuzz"))
+			clusterExport(cl=cl,c("matCorr","matNSamp","matCorSig"))
 			groupMatLists = parLapply(cl=cl,groupList,calcCorrs,
 			                          corrType=corrType,impute=impute)
 			names(groupMatLists) = designRes[[2]]
@@ -134,7 +134,7 @@ getCors <- function(inputMat, design, inputMatB = NULL, impute = FALSE, corrType
 			nsamp = matNSamp(matA = t(groupListA[[i]]), impute = impute,
 				matB = t(groupListB[[i]]), secondMat = TRUE)
 
-			pval = matCorSig.fuzz(corr, nsamp, cl=cl, secondMat = TRUE)
+			pval = matCorSig(corr, nsamp, cl=cl, secondMat = TRUE)
 
 			groupMatLists[[i]] = list(corrs = corr, pvals = pval, nsamps = nsamp)
 

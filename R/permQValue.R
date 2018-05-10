@@ -27,7 +27,7 @@ permQValue <- function(dcObject, permObject, secondMat, testSlot,
 
   qobj = tryCatch(
     {
-      qvalue::qvalue(p = pvalues, lambda = seq(0.05, 0.95, 0.05))
+      qvalue::qvalue(p = pvalues, lambda = seq(0.05, 0.95, 0.05), lfdr.out=FALSE)
     }, error=function(cond) {
       message("Here's the original error message:")
       message(cond)
@@ -37,7 +37,7 @@ permQValue <- function(dcObject, permObject, secondMat, testSlot,
       #if the qvalue computation returned without error, then its format should be a list; if not, there was an error.
       qobj = tryCatch(
         {
-          qvalue::qvalue(p = pvalues, lambda = seq(0.1, 0.9, 0.05),cl=cl)
+          qvalue::qvalue_truncp(p = pvalues, lambda = seq(0.1, 0.9, 0.05),lfdr.out=FALSE)
         }, error=function(cond) {
           message("Here's the original error message:")
           message(cond)
@@ -46,7 +46,7 @@ permQValue <- function(dcObject, permObject, secondMat, testSlot,
           return(NA)
           qobj = tryCatch(
             {
-              qvalue::qvalue(p = pvalues, lambda = seq(0.2, 0.8, 0.05),cl=cl)
+              qvalue::qvalue_truncp(p = pvalues, lambda = seq(0.2, 0.8, 0.05),lfdr.out=FALSE)
             }, error=function(cond) {
               message("Here's the original error message:")
               message(cond)
@@ -55,7 +55,7 @@ permQValue <- function(dcObject, permObject, secondMat, testSlot,
               return(NA)
               qobj = tryCatch(
                 {
-                  qvalue::qvalue(p = pvalues, lambda = seq(0.3, 0.7, 0.05),cl=cl)
+                  qvalue::qvalue_truncp(p = pvalues, lambda = seq(0.3, 0.7, 0.05),lfdr.out=FALSE)
                 }, error=function(cond) {
                   message("Here's the original error message:")
                   message(cond)
