@@ -54,7 +54,7 @@ ddcorAllParallel <- function(inputMat, design, compare, outputFile,
 	corr_cutoff = 0.99, getDCorAvg = FALSE, dCorAvgType = "gene_average",
 	dCorAvgMethod = "median", signType = "none", oneSidedPVal = FALSE, 
 	perBatch = 10, coresPerJob = 2, timePerJob = 60, memPerJob = 2000, 
-	batchConfig = system.file("inst/config/batchConfig_Zhang.R"), batchDir = "batchRegistry",
+	batchConfig = system.file("config/batchConfig_Zhang.R",package="DGCA"), batchDir = "batchRegistry",
 	batchWarningLevel = 0, batchSeed = 12345, maxRetries = 3, testJob=FALSE){
 
 	## REMOVED PARAMETERS 

@@ -28,7 +28,7 @@ ddcorAllParallelWorker <- function(job,data,instance){
 	cl<-parallel::makeCluster(data$n.cores)
 	doParallel::registerDoParallel(cl)
 
-	parallel::clusterEvalQ(cl=cl,eval(parse(file.path(path.package("DGCA"), "R/ddcorClasses.R"))))
+	parallel::clusterExport(cl=cl,list("corMats","dcPair"))
 
 	set.seed(data$seed) #random seed for reproducibility
 
