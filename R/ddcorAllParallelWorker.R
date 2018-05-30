@@ -28,8 +28,6 @@ ddcorAllParallelWorker <- function(job,data,instance){
 	cl<-parallel::makeCluster(data$n.cores)
 	doParallel::registerDoParallel(cl)
 
-	parallel::clusterExport(cl=cl,list("corMats","dcPair"))
-
 	set.seed(data$seed) #random seed for reproducibility
 
 	nPairs = (nrow(data$matA)*nrow(data$matA)-nrow(data$matA))/2+(nrow(data$matB)*nrow(data$matB)-nrow(data$matB))/2
