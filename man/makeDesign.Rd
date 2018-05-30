@@ -20,4 +20,3 @@ n_oligo_samples = 38; n_neuron_samples = 120
 cell_type = c(rep("oligodendrocyte", n_oligo_samples), rep("neuron", n_neuron_samples))
 design_mat = makeDesign(cell_type)
 }
-

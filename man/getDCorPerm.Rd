@@ -6,7 +6,7 @@
 \usage{
 getDCorPerm(inputMat, design, compare, inputMatB = NULL, impute = FALSE,
   nPerms = 10, corrType = "pearson", corr_cutoff = 0.99,
-  signType = "none")
+  signType = "none", cl = NULL)
 }
 \arguments{
 \item{inputMat}{The matrix (or data.frame) of values (e.g., gene expression values from an RNA-seq or microarray study) that you are interested in analyzing. The rownames of this matrix should correspond to the identifiers whose correlations and differential correlations you are interested in analyzing, while the columns should correspond to the rows of the design matrix and should be separable into your groups.}
@@ -26,6 +26,8 @@ getDCorPerm(inputMat, design, compare, inputMatB = NULL, impute = FALSE,
 \item{corr_cutoff}{Cutoff specifying correlation values beyond which will be truncated to this value, to reduce the effect of outlier correlation values when using small sample sizes. Default = 0.99}
 
 \item{signType}{Coerce all correlation coefficients to be either positive (via "positive"), negative (via "negative"), or none (via "none"). This could be used if you think that going from a positive to a negative correlation is unlikely to occur biologically and is more likely to be due to noise, and you want to ignore these effects. Note that this does NOT affect the reported underlying correlation values, but does affect the z-score difference of correlation calculation. Default = "none", for no coercing.}
+
+\item{cl}{A parallel cluster object created by parallel::makeCluster(). If FALSE, defaults to single-core implementation.}
 }
 \value{
 An array of permuted differences in z-scores calculated between conditions, with the third dimension corresponding to the number of permutations performed.
@@ -33,4 +35,3 @@ An array of permuted differences in z-scores calculated between conditions, with
 \description{
 Takes input and methods and randomly permutes the data to do getCor as well as group-specific pairwiseDCor.
 }
-

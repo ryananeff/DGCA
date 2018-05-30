@@ -6,16 +6,16 @@
 #' @param testSlot The slot of the dcObject to be removed for use as the actual test statistic.
 #' @param verbose Whether summaries of the q-value operations should be reported.
 #' @param plotFdr Allows for plotting of fdrtool p-value adjustment result OR empirical FDR q-value adjustment technique, if either of these are chosen. Requires fdrtool package OR qvalue package. Default = FALSE.
+#' @param empOnly Whether or not we don't want to calculate qvalues for the empirical pvalues. Default = FALSE.
 #' @return A list containing a vectof of empirical p-values and a vector of q-values, both of the same length as the original actual test statistics.
 #' @export
 permQValue <- function(dcObject, permObject, secondMat, testSlot,
-  verbose = FALSE, plotFdr = FALSE,cl=NULL,empOnly=FALSE){
+  verbose = FALSE, plotFdr = FALSE,empOnly=FALSE){
 
   test_stat_actual = slot(dcObject, testSlot)
   if(!secondMat) test_stat_actual = test_stat_actual[upper.tri(test_stat_actual)]
   test_stat_actual = as.numeric(test_stat_actual)
 
-  permObject_b <<-permObject
   if(!secondMat) permObject = permObject[apply(permObject, 3, upper.tri)]
   perm_stats = as.numeric(permObject)
 
@@ -25,62 +25,24 @@ permQValue <- function(dcObject, permObject, secondMat, testSlot,
 
   message("Calculating qvalues from the empirical p-values.")
   if(!empOnly){
-    try_lambda = 20
-    qobj = tryCatch(
-        {
-            if ( max(0.01,round(min(pvalues)+0.01,2)) >= min(round(max(pvalues)-0.01,2),0.95) ) {
-                 qobj = list()
-                 qobj$qvalues = rep(NA, length.out=length(pvalues))
-                 return(qobj)
-            }else{
-            rangevals = (max(pvalues)-min(pvalues))
-          qvalue::qvalue(p = pvalues, lambda = seq(max(0.01,round(min(pvalues)+0.01,2)), 
-                                                   min(round(max(pvalues)-0.01,2),0.95), 
-                                                   min(0.01,round(rangevals/try_lambda,4))), lfdr.out=FALSE)
-            }
-        }, error=function(cond) {
-          message("Here's the original error message:")
-          message(cond)
-          cat("\n")
-          message("estimated pi0 <= 0 sometimes happens with relatively small numbers of gene pairs. Using a more conservative lambda sequence...")
-          #if the qvalue computation returned without error, then its format should be a list; if not, there was an error.
-          qobj = tryCatch(
-            {
-              qvalue::qvalue(p = pvalues, lambda = seq(0.1, 0.9, 0.01),lfdr.out=FALSE)
-            }, error=function(cond) {
-              message("Here's the original error message:")
-              message(cond)
-              cat("\n")
-              message("estimated pi0 <= 0 sometimes happens with relatively small numbers of gene pairs. Using a more conservative lambda sequence...")
-              qobj = tryCatch(
-                {
-                  qvalue::qvalue(p = pvalues, lambda = seq(0.2, 0.8, 0.01),lfdr.out=FALSE)
-                }, error=function(cond) {
-                  message("Here's the original error message:")
-                  message(cond)
-                  cat("\n")
-                  message("estimated pi0 <= 0 sometimes happens with relatively small numbers of gene pairs. Using a more conservative lambda sequence...")
-                  qobj = tryCatch(
-                    {
-                      qvalue::qvalue(p = pvalues, lambda = seq(0.3, 0.7, 0.01),lfdr.out=FALSE)
-                    }, error=function(cond) {
-                      message("Here's the original error message:")
-                      message(cond)
-                      cat("\n")
-                      message("estimated pi0 <= 0 sometimes happens with relatively small numbers of gene pairs. Using a more conservative lambda sequence... if this doesn't work, will report the empirical p-values and the adjusted q-values as NA values to indicate that q-value adjustment did not work.")
-                      qobj = list()
-                      qobj$qvalues = rep(NA, length.out=length(pvalues))
-                      return(qobj)
-                  })
-              })
-          })
-        })
+
+    qobj = getQValue(pvalues)
 
     if(verbose) summary(qobj)
-    if(plotFdr) plot(qobj)
-
+    if (plotFdr){
+      tryCatch(
+          {
+                grDevices::pdf(file="qvalue_adjustment.pdf")
+                graphics::plot(qobj)
+                grDevices::dev.off()
+              }, error=function(cond) {
+                message("Warning while plotting q-values. Here's the original error message:")
+                message(cond)
+                cat("\n")
+              })
+    }
     return(list(empPVals = pvalues, pValDiffAdj = qobj$qvalues))
-    }else{
+  } else {
       message("Skipping q-value calculation step (perhaps to calculate it at a later step?)")
       return(list(empPVals = pvalues, pValDiffAdj = rep(NA,length.out=length(pvalues))))
   }

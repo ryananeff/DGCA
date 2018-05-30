@@ -37,4 +37,3 @@ A ggplot2 object that can be plotted, further modified, and/or saved.
 \description{
 Takes the original input matrix, a design matrix, and two gene symbols to plot the corelation in the conditions specified.
 }
-

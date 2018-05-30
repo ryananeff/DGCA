@@ -42,4 +42,3 @@ A ggplot2 object that can be plotted, further modified, and/or saved.
 \description{
 Takes the original input matrix, a design matrix, and one gene symbols (row name of the original matrix) to plot its values in the conditions specified, using a dotplot, +/- a summary bar. Will remove NAs prior to plotting.
 }
-

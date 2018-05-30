@@ -29,4 +29,3 @@ A list of significantly differentially correlated genes.
 \description{
 Takes a table of differentially correlated genes with respect to one gene in the Gene2 column and returns the a list of vectors with unique, non-NA gene symbols for genes in each of the differentially correlated classes.
 }
-

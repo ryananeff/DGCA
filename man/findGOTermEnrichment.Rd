@@ -33,4 +33,3 @@ A data frame with the term enrichments of the GO enrichment analysis given the i
 \description{
 Given a gene character vector and a universe character vector, which can be either Ensembl or HGNC symbols, find the over-representation enrichment of the gene list relative to the universe in a gene ontology category using the hypergeometric test and the GOstats R package.
 }
-

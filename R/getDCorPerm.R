@@ -42,9 +42,9 @@ getDCorPerm <- function(inputMat, design, compare, inputMatB = NULL, impute = FA
 	}
 
 	if(!identical(cl,FALSE)){
-		clusterExport(cl=cl,c("getCors","pairwiseDCor","getGroupsFromDesign","clusterExport",
+		parallel::clusterExport(cl=cl,c("getCors","pairwiseDCor","getGroupsFromDesign",
 		                      "dCorMats","dCorrs"))
-		zPermMatList = parLapplyLB(cl,1:nPerms,calcZscores,
+		zPermMatList = parallel::parLapplyLB(cl,1:nPerms,calcZscores,
 		                         inputMat=inputMat,design=design,compare=compare,
 		                         inputMatB=inputMatB,impute=impute,corrType=corrType,
 		                         corr_cutoff=corr_cutoff,signType=signType,clus=FALSE,

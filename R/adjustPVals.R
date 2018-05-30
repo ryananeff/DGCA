@@ -19,8 +19,8 @@ adjustPVals <- function(pVals, adjust = "none", plotFdr = FALSE,
 	fdrtool_methods = c("fndr", "pct0", "locfdr")
 	qvalue_methods = c("qvalue")
 
-	if(!(adjust %in% c("none", p_adjust_methods, fdrtool_methods))){
-		stop("Adjust method is one of the available methods.")
+	if(!(adjust %in% c("none", p_adjust_methods, fdrtool_methods, qvalue_methods))){
+		stop("Adjust method is not one of the available methods.")
 	}
 
 	pVals = as.numeric(pVals)
@@ -36,56 +36,16 @@ adjustPVals <- function(pVals, adjust = "none", plotFdr = FALSE,
 		if(verbose){
 			message(paste0("Adjusting p-values for multiple comparisons using ", adjust, " method using qvalue library."))
 		}
-		qobj = tryCatch(
-		    {
-		      qvalue::qvalue(p = pvalues, lambda = seq(0.05, 0.95, 0.05))
-		    }, error=function(cond) {
-		      message("Here's the original error message:")
-		      message(cond)
-		      cat("\n")
-		      message("estimated pi0 <= 0 sometimes happens with relatively small numbers of gene pairs. Using a more conservative lambda sequence...")
-		      return(NA)
-		      #if the qvalue computation returned without error, then its format should be a list; if not, there was an error.
-		      qobj = tryCatch(
-		        {
-		          qvalue::qvalue(p = pvalues, lambda = seq(0.1, 0.9, 0.05),cl=cl)
-		        }, error=function(cond) {
-		          message("Here's the original error message:")
-		          message(cond)
-		          cat("\n")
-		          message("estimated pi0 <= 0 sometimes happens with relatively small numbers of gene pairs. Using a more conservative lambda sequence...")
-		          return(NA)
-		          qobj = tryCatch(
-		            {
-		              qvalue::qvalue(p = pvalues, lambda = seq(0.2, 0.8, 0.05),cl=cl)
-		            }, error=function(cond) {
-		              message("Here's the original error message:")
-		              message(cond)
-		              cat("\n")
-		              message("estimated pi0 <= 0 sometimes happens with relatively small numbers of gene pairs. Using a more conservative lambda sequence...")
-		              return(NA)
-		              qobj = tryCatch(
-		                {
-		                  qvalue::qvalue(p = pvalues, lambda = seq(0.3, 0.7, 0.05),cl=cl)
-		                }, error=function(cond) {
-		                  message("Here's the original error message:")
-		                  message(cond)
-		                  cat("\n")
-		                  message("estimated pi0 <= 0 sometimes happens with relatively small numbers of gene pairs. Using a more conservative lambda sequence... if this doesn't work, will report the the adjusted q-values as NA values to indicate that q-value adjustment did not work.")
-		                  qobj$qvalues = rep(NA, length(pvalues))
-		                  return(qobj)
-		              })
-		          })
-		      })
-		    }) ## close tryCatch block
+		
+		qobj = getQValue(pVals)
 
 		pvals_adj = qobj$qvalues
 		if (plotFdr){
 			tryCatch(
 			    {
-				  pdf(file="qvalue_adjustment.pdf")
-	              plot(qobj)
-	              dev.off()
+				  grDevices::pdf(file="qvalue_adjustment.pdf")
+	              graphics::plot(qobj)
+	              grDevices::dev.off()
 	            }, error=function(cond) {
 	              message("Warning while plotting q-values. Here's the original error message:")
 	              message(cond)

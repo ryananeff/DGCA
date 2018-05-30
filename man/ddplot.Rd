@@ -35,4 +35,3 @@ The sorted difference in z-score matrix in both conditions, which you can use to
 \description{
 This function orders the differences in correlations between conditions by the median strength of correlation differences for each gene and plots a heatmap of the correlations in each condition (lower = condition A, upper = condition B) using the heatmap.2 function from the gplots package.
 }
-

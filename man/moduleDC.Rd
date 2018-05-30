@@ -7,7 +7,7 @@
 moduleDC(inputMat, design, compare, genes, labels, corr_cutoff = 0.99,
   signType = "none", corrType = "pearson", nPerms = 50,
   oneSidedPVal = FALSE, gene_avg_signif = 0.05, number_DC_genes = 3,
-  dCorAvgMethod = "median")
+  dCorAvgMethod = "median", cl = FALSE)
 }
 \arguments{
 \item{inputMat}{The matrix (or data.frame) of values (e.g., gene expression values from an RNA-seq or microarray study) that you are interested in analyzing. The rownames of this matrix should correspond to the identifiers whose correlations and differential correlations you are interested in analyzing, while the columns should correspond to the rows of the design matrix and should be separable into your groups.}
@@ -35,6 +35,8 @@ moduleDC(inputMat, design, compare, genes, labels, corr_cutoff = 0.99,
 \item{number_DC_genes}{The number of top differentially correlated genes with more correlation in each condition in each module to return in the data frame.}
 
 \item{dCorAvgMethod}{Character vector specifying the method for calculating the "average" differential correlation calculation that should be used. Options = "median", "mean".}
+
+\item{cl}{A parallel cluster object created by parallel::makeCluster(). If FALSE, defaults to single-core implementation. Default = FALSE.}
 }
 \value{
 A data frame with the module labels, the average change in difference in z-score between conditions (i.e., one measure of the modular average differential connectivity, or MeDC), and the empirical p-value for the significance of the change in correlation.
@@ -52,4 +54,3 @@ moduleDC_res = moduleDC(inputMat = darmanis, design = design_mat,
  compare = c("oligodendrocyte", "neuron"), genes = modules$values,
  labels = modules$ind)
 }
-

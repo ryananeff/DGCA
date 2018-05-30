@@ -35,4 +35,3 @@ A list of lists of df's, one corresponding to each module, containing GO enrichm
 \description{
 Takes input vectors of gene symbols, labels of corresponding modules, and a universe gene set and leverages the GOstats package to perform GO enrichment analysis.
 }
-

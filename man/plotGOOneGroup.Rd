@@ -33,4 +33,3 @@ An ggplot2 object that can be called in order to plot it, saved, or modified.
 \description{
 Uses ggplot2 to create a horizontal bar plot of the p-values (or odds-ratios) from enrichment tests of GO terms derived from differentially correlated gene sets (or any gene sets inputted into upstream functions). Note that the first column of each data frame is removed to allow for row binding, and otherwise the column names should match.
 }
-

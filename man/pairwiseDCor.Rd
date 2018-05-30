@@ -26,4 +26,3 @@ A dcPair class object, containing the difference in z scores for each comparison
 \description{
 Find the differential correlation between two conditions.
 }
-

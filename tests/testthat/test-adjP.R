@@ -7,7 +7,7 @@ pvals = runif(0, 1, n = 100)
 test_that("adjPVals works as expected on improper input", {
 
 	expect_error(adjustPVals(pvals, adjust = "foo"),
-		"Adjust method is one of the available methods")
+		"Adjust method is not one of the available methods")
 
 })
 

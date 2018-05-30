@@ -5,7 +5,7 @@
 \title{Compute matrices necessary for differential correlation calculation.}
 \usage{
 getCors(inputMat, design, inputMatB = NULL, impute = FALSE,
-  corrType = "pearson")
+  corrType = "pearson", cl = FALSE)
 }
 \arguments{
 \item{inputMat}{The matrix (or data.frame) of values (e.g., gene expression values from an RNA-seq or microarray study) that you are interested in analyzing. The rownames of this matrix should correspond to the identifiers whose correlations and differential correlations you are interested in analyzing, while the columns should correspond to the rows of the design matrix and should be separable into your groups.}
@@ -17,6 +17,8 @@ getCors(inputMat, design, inputMatB = NULL, impute = FALSE,
 \item{impute}{A binary variable specifying whether values should be imputed if there are missing values. Note that the imputation is performed in the full input matrix (i.e., prior to subsetting) and uses k-nearest neighbors.}
 
 \item{corrType}{The correlation type of the analysis, limited to "pearson" or "spearman". Default = "pearson".}
+
+\item{cl}{A parallel cluster object created by parallel::makeCluster(). If FALSE, defaults to single-core implementation. Default = FALSE.}
 }
 \value{
 A corMats S4 class object, containing a list of matrices from each group, the design matrix, and a character vector of options.
@@ -28,4 +30,3 @@ As a first step in the standard DGCA workflow, this function reads in a design m
 data(darmanis); data(design_mat); darmanis_subset = darmanis[1:30, ]
 cors_res = getCors(inputMat = darmanis_subset, design = design_mat)
 }
-

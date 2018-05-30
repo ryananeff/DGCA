@@ -27,7 +27,8 @@
 #' @param dCorAvgMethod Character vector specifying the method for calculating the "average" differential correlation calculation that should be used. Options = "median", "mean".
 #' @param signType Coerce all correlation coefficients to be either positive (via "positive"), negative (via "negative"), or none (via "none") prior to calculating differential correlation. This could be used if, e.g., you think that going from a positive to a negative correlation is unlikely to occur biologically and is more likely to be due to noise, and you want to ignore these effects. Note that this does NOT affect the reported underlying correlation values, but does affect the z-score difference of correlation calculation. Default = "none", for no coercing.
 #' @param oneSidedPVal If the dCorAvgType test is total_average, this option specifies whether a one-sided p-value should be reported, as opposed to a two-sided p-value. That is, if the average difference of z-scores is greater than zero, test whether the permutation average difference of z-scores are less than that average to get the p-value, and vice versa for the case that the average difference of z-scores is less than 0. Otherwise, test whether the absolute value of the average difference in z-scores is greater than the absolute values of the permutation average difference in z-scores. Default = FALSE.
-#' @param cl A parallel cluster object created by parallel::makeCluster(). If FALSE, defaults to single-core implementation.
+#' @param cl A parallel cluster object created by parallel::makeCluster(). If FALSE, defaults to single-core implementation. Default = FALSE.
+#' @param empOnly Whether or not we don't want to calculate qvalues for the empirical pvalues. Default = FALSE.
 #' @param ... Additional plotting arguments if heatmapPlot = TRUE.
 #' @return Typically, the returned object is a data frame of the table of differential correlations between conditions. In the case that dCorAvg is calculated, the returned object is instead a list containing that table as well as the object summarizing the difference in average correlation for the specified portion of the data set.
 #' @examples
@@ -41,7 +42,7 @@ ddcorAll <- function(inputMat, design, compare, inputMatB = NULL, splitSet = NUL
 	corSigThresh = 0.05, heatmapPlot = FALSE, color_palette = NULL, verbose = FALSE, plotFdr = FALSE,
 	corr_cutoff = 0.99, signType = "none", getDCorAvg = FALSE, dCorAvgType = "gene_average",
 	dCorAvgMethod = "median", oneSidedPVal = FALSE, customize_heatmap = FALSE,
-	heatmapClassic = FALSE, corPower = 2, cl=NULL, empOnly=FALSE,...){
+	heatmapClassic = FALSE, corPower = 2, cl=FALSE, empOnly=FALSE,...){
 
 	################################
 	# check inputs
@@ -140,14 +141,14 @@ ddcorAll <- function(inputMat, design, compare, inputMatB = NULL, splitSet = NUL
 		ddcor_table = dcTopPairs(dcObject = ddcor_res, nPairs = nPairs,
 			adjust = adjust, plotFdr = plotFdr, classify = classify, compare = compare,
 			sigThresh = sigThresh, corSigThresh = corSigThresh, verbose = verbose,
-			secondMat = secondMat,cl=cl,empOnly=empOnly)
+			secondMat = secondMat,empOnly=empOnly)
 	}
 
 	if(adjust == "perm"){
 		ddcor_table = dcTopPairs(dcObject = ddcor_res, nPairs = nPairs,
 			adjust = adjust, plotFdr = plotFdr, classify = classify, compare = compare,
 			sigThresh = sigThresh, corSigThresh = corSigThresh,
-			zScorePerm = ddcor_perm, verbose = verbose, secondMat = secondMat,cl=cl,empOnly=empOnly)
+			zScorePerm = ddcor_perm, verbose = verbose, secondMat = secondMat,empOnly=empOnly)
 	}
 
 	#############################

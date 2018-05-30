@@ -26,4 +26,3 @@ matcor_res = matCorr(matA = darmanis_subset, corrType = "pearson")
 \description{
 This function takes one or two input matrices and calculates a correlation matrix from it using the speed-optimized correlation function from WGCNA.
 }
-

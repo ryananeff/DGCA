@@ -5,13 +5,13 @@
 #' @param impute A binary variable specifying whether values should be imputed if there are missing values. Note that the imputation is performed in the full input matrix (i.e., prior to subsetting) and uses k-nearest neighbors.
 #' @param design A standard model.matrix created design matrix. Rows correspond to samples and colnames refer to the names of the conditions that you are interested in analyzing. Only 0's or 1's are allowed in the design matrix. Please see vignettes for more information.
 #' @param corrType The correlation type of the analysis, limited to "pearson" or "spearman". Default = "pearson".
-#' @param cl A parallel cluster object created by parallel::makeCluster(). If FALSE, defaults to single-core implementation.
+#' @param cl A parallel cluster object created by parallel::makeCluster(). If FALSE, defaults to single-core implementation. Default = FALSE.
 #' @return A corMats S4 class object, containing a list of matrices from each group, the design matrix, and a character vector of options.
 #' @examples
 #' data(darmanis); data(design_mat); darmanis_subset = darmanis[1:30, ]
 #' cors_res = getCors(inputMat = darmanis_subset, design = design_mat)
 #' @export
-getCors <- function(inputMat, design, inputMatB = NULL, impute = FALSE, corrType = "pearson", cl=NULL){
+getCors <- function(inputMat, design, inputMatB = NULL, impute = FALSE, corrType = "pearson", cl=FALSE){
 
 	##############################
 	#set SAF to FALSE while restoring to default when the function is finished
@@ -93,17 +93,15 @@ getCors <- function(inputMat, design, inputMatB = NULL, impute = FALSE, corrType
 				return(list(corrs = corr, pvals = pval, nsamps = nsamp))
 			}
 		if(!identical(cl,FALSE)){
-			clusterExport(cl=cl,c("matCorr","matNSamp","matCorSig"))
+			parallel::clusterExport(cl=cl,c("matCorr","matNSamp","matCorSig"))
 			##TODO: calculate the correlation in chunks and write out to intermediate file
-			groupMatLists = parLapply(cl=cl,groupList,calcCorrs,
+			groupMatLists = parallel::parLapply(cl=cl,groupList,calcCorrs,
 			                          corrType=corrType,impute=impute)
 			names(groupMatLists) = designRes[[2]]
-			groupMatLists <<- groupMatLists
 		}else{
 			for(i in 1:length(groupList)){
 				groupMatLists[[i]] = calcCorrs(groupList[[i]],corrType,impute)
 			}
-			groupMatLists_bak <<- groupMatLists
 		}
 
 	}
@@ -134,16 +132,15 @@ getCors <- function(inputMat, design, inputMatB = NULL, impute = FALSE, corrType
 			return(list(corrs = corr, pvals = pval, nsamps = nsamp))
 		}
 		if(!identical(cl,FALSE)){
-			clusterExport(cl=cl,c("matCorr","matNSamp","matCorSig"))
+			parallel::clusterExport(cl=cl,c("matCorr","matNSamp","matCorSig"))
 			##replacement for python zip() function to allow submission as parallel job
 			zipLists = list()
 			for (i in 1:length(designRes[[1]])){
 				zipLists[[i]]=list(designRes[[1]][[i]],designRes[[2]][[i]]) #this gets us into the right format while using the same memory as non-parallel case
 			}
-			groupMatLists = parLapply(cl=cl,zipLists,calcCorrs2samp,
+			groupMatLists = parallel::parLapply(cl=cl,zipLists,calcCorrs2samp,
 			                          corrType=corrType,impute=impute)
 			names(groupMatLists) = designRes[[3]]
-			groupMatLists <<- groupMatLists
 		}else{
 			groupListA = designRes[[1]]
 			groupListB = designRes[[2]]

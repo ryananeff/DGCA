@@ -30,4 +30,3 @@ A list of two differential correlation matrices: one for the difference in z-sco
 \description{
 Takes two corresponding correlation and nsamp matrices and returns matrices for the scaled difference in correlation as well as the p-value of that difference.
 }
-

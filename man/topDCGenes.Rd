@@ -32,4 +32,3 @@ ddcor_res = ddcorAll(inputMat = darmanis_subset, design = design_mat,
  compare = c("oligodendrocyte", "neuron"))
 top_genes = topDCGenes(ddcor_res)
 }
-

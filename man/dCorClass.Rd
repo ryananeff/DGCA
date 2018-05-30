@@ -36,4 +36,3 @@ pvalsA = runif(100, 0, 1); pvalsB = runif(100, 0, 1); dcor_pvals = runif(100, 0,
 cor_classes = dCorClass(rho1, pvalsA, rho2, pvalsB, dcor_pvals)
 cor_classes = dCorClass(rho1, pvalsA, rho2, pvalsB, dcor_pvals, convertClasses = TRUE)
 }
-

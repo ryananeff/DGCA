@@ -40,4 +40,3 @@ A data frame summarizing the GO term enrichments from each group, with columns o
 \description{
 Takes a data frame of enrichment results in multiple modules and plots the results. Note that if a GO term enrichment does not exist for that module, it is set as 0 for an OR or 1 for a p-value.
 }
-

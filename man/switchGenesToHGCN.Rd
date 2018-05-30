@@ -15,4 +15,3 @@ Character vector of cleaned gene names.
 \description{
 Where possible, switches a character vector of gene names to cleaned and updated HGNC symbols.
 }
-

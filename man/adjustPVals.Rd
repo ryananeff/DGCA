@@ -9,21 +9,21 @@ adjustPVals(pVals, adjust = "none", plotFdr = FALSE, verbose = FALSE)
 \arguments{
 \item{pVals}{Numeric vector of p-values to adjust.}
 
-\item{adjust}{Allows for resulting p-values to be corrected for multiple hypothesis tests. Optional and some non-default choices require the "fdrtool" package. Default = "none", which means that no p-value adjustment is performed. Other options include methods in ?p.adjust (i.e., "holm", "hochberg", "hommel", "bonferroni", "BH", "BY", "fdr"), and methods in ?fdrtool (i.e., "fndr", "pct0", "locfdr").}
+\item{adjust}{Allows for resulting p-values to be corrected for multiple hypothesis tests. Optional and some non-default choices require the "fdrtool" package or the "qvalue" package. Default = "none", which means that no p-value adjustment is performed. Other options include methods in ?p.adjust (i.e., "holm", "hochberg", "hommel", "bonferroni", "BH", "BY", "fdr"), methods in ?fdrtool (i.e., "fndr", "pct0", "locfdr"), and methods in ?qvalue (i.e. "qvalue").}
 
-\item{plotFdr}{Allows for plotting of fdrtool p-value adjustment result, if this is chosen. Requires fdrtool package. Default = FALSE.}
+\item{plotFdr}{Allows for plotting of fdrtool or qvalue p-value adjustment result, if this is chosen. Requires fdrtool package or qvalue package. Default = FALSE.}
 
 \item{verbose}{If TRUE, the function prints out the general method used for multiple correction analysis. Default = FALSE.}
 }
 \value{
-A numeric vector of p-values that have been adjusted according to the specified method.
+A numeric vector of p-values (or q-values) that have been adjusted according to the specified method.
 }
 \description{
-Wraps around the R base implementation of p.adjust, as well as the methods used in the fdr tool package.
+Wraps around the R base implementation of p.adjust, the methods used in the fdr tool package, and the qvalue package.
 }
 \examples{
 pvals = runif(100, 0, 1)
 adj_pvals_bh = adjustPVals(pvals, adjust = "BH")
 adj_pvals_hommel = adjustPVals(pvals, adjust = "hommel")
+adj_pvals_qval = adjustPVals(pvals, adjust = "qvalue")
 }
-

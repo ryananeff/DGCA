@@ -1,6 +1,6 @@
 #' @title Calls the DGCA pairwise pipeline, splitting input matrix into multiple batch jobs on an HPC.
 #' @description Runs the full discovery of differential correlation (ddcor) section for comparing pairwise correlations across conditions in the Differential Gene Correlation Analysis (DGCA) package.
-#' @param inputMat The matrix (or data.frame) of values (e.g., gene expression values from an RNA-seq or microarray study) that you are interested in analyzing. The rownames of this matrix should correspond to the identifiers whose correlations and differential correlations you are interested in analyzing, while the columns should correspond to the rows of the design matrix and should be separable into your groups.
+#' @param inputMat The matrix (or data.frame) of values (e.g., gene expression values from an RNA-seq or microarray study) that you are interested in analyzing. The rownames of this matrix should correspond to the identifiers whose correlations and differential correlations you are interested in analyzing, while the columns should correspond to the rows of the design matrix and should be separable into your compare.
 #' @param design A standard model.matrix created design matrix. Rows correspond to samples and colnames refer to the names of the conditions that you are interested in analyzing. Only 0's or 1's are allowed in the design matrix. Please see vignettes for more information.
 #' @param compare Vector of two character strings, each corresponding to one group name in the design matrix, that should be compared.
 #' @param outputFile Location to save the output. This is necessary when the number of comparisons >= 2^31-1. Required.
@@ -11,13 +11,13 @@
 #' @param sortBy Character string specifying the way by which you'd like to sort the resulting table. This will happen at the system shell level (requires a UNIX shell).
 #' @param adjust Allows for resulting p-values to be corrected for multiple hypothesis tests, optional. Some non-default choices require the "fdrtool" package or the "qvalue". Default = "none", which means that no p-value adjustment is performed. Other options include "perm" to use permutation samples, methods in ?p.adjust (i.e., "holm", "hochberg", "hommel", "bonferroni", "BH", "BY", "fdr"), and methods in ?fdrtool (i.e., "fndr", "pct0", "locfdr").
 #' @param nPerms Number of permutations to generate. If NULL, permutation testing will not be performed. Default = "10".
-#' @param classify Binary value specifying whether the correlation values in each condition and differential correlation scores should be used to classifying the resulting identifiers into groups. Default = TRUE
+#' @param classify Binary value specifying whether the correlation values in each condition and differential correlation scores should be used to classifying the resulting identifiers into compare. Default = TRUE
 #' @param sigThresh If classify = TRUE, this numeric value specifies the p-value threshold at which a differential correlation p-value is deemed significant for differential correlation class calculation. Default = 1, as investigators may use different cutoff thresholds; however, this can be lowered to establish significant classes as desired.
 #' @param corSigThresh If classify = TRUE, this numeric value specifies the p-value threshold at which a correlation p-value is deemed significant. Default = 0.05.
 #' @param corPower The power to raise the correlations to before plotting the classic heatmap. Larger correlation powers emphasize larger correlation values relatively more compared to smaller correlation values.
 #' @param verbose Option indicating whether the program should give more frequent updates about its operations. Default = FALSE.
 #' @param corr_cutoff Cutoff specifying correlation values beyond which will be truncated to this value, to reduce the effect of outlier correlation values when using small sample sizes. Note that this does NOT affect the underlying correlation values, but does affect the z-score difference of correlation calculation in the dcTopPairs table. Default = 0.99
-#' @param getDCorAvg Logical, specifying whether the average difference in correlation between groups should be calculated. Default = FALSE
+#' @param getDCorAvg Logical, specifying whether the average difference in correlation between compare should be calculated. Default = FALSE
 #' @param dCorAvgType Character vector specifying the type of average differential correlation calculation that should be performed. Only evaluated if dCorAge is TRUE. Types = c("gene_average", "total_average", "both"). gene_average calculates whether each genes' differential correlation with all others is more than expected via permutation samples (and empirical FDR adjustment, in the case of > 1 gene), while total_average calculates whether the total average differential correlation is higher than expected via permutation samples. "both" performs both of these. If splitSet is specified, then only genes in the splitSet have their average gene differential correlation calculated if gene_average is chosen.
 #' @param dCorAvgMethod Character vector specifying the method for calculating the "average" differential correlation calculation that should be used. Options = "median", "mean".
 #' @param signType Coerce all correlation coefficients to be either positive (via "positive"), negative (via "negative"), or none (via "none") prior to calculating differential correlation. This could be used if, e.g., you think that going from a positive to a negative correlation is unlikely to occur biologically and is more likely to be due to noise, and you want to ignore these effects. Note that this does NOT affect the reported underlying correlation values, but does affect the z-score difference of correlation calculation. Default = "none", for no coercing.
@@ -28,24 +28,20 @@
 #' @param memPerJob Memory to request for each batch job (e.g. in a HPC cluster), in MB. Default = 2000
 #' @param batchConfig Location of the batchtools configuration file (e.g. to configure this tool to work with your HPC cluster). Defaults to one used at inst/config/batchConfig_Zhang.R.
 #' @param batchDir Location to store temporary files, logs, and results of the batch run. This is the registry for the batchtools R package. Default = batchRegistry/
-#' @param batchWarningLevel Warning level on remote nodes during DGCA calculation (equivalent to setting options(warn=batchWarningLevel). 
+#' @param batchWarningLevel Warning level on remote nodes during DGCA calculation (equivalent to setting options(warn=batchWarningLevel). Default = 0.
 #' @param batchSeed Random seed to use on all batch jobs. Default = 12345.
 #' @param maxRetries Number of times to re-submit jobs that failed. This is helpful for jobs that failed due to transient errors on an HPC. Default = 3
-#' @param testJob Test one job before running it? Default = TRUE
+#' @param testJob Test one job before running it? Default = FALSE
 #' @return Returns whether all jobs successfully executed or not. Output is in the output file.
-#' @examples
-#' data(darmanis); data(design_mat); darmanis_subset = darmanis[1:30, ]
-#' ddcor_res = ddcorAllParallel(inputMat = darmanis_subset, design = design_mat,
-#' 	compare = c("oligodendrocyte", "neuron"))
 #' @export
 
 #split = 50	##perBatch				
 #nPerms = 15 ##nPerms															
-#num_cores = 2	#coresPerJob															
+#coresPerJob = 2	#coresPerJob															
 #outputfile = "/sc/orga/projects/zhangb03a/lei_guo/DGCA_gene_CNV/gene_cnv_dgca_f.ad-m.ad_bm36.batchtools.txt" #outputFile
-#input_data = expr_f.ad_m.ad #input dataframe
-#design_mat = design_sex.ad #input design matrix									
-#groups = c("F.AD", "M.AD")	##compare													
+#inputMat = expr_f.ad_m.ad #input dataframe
+#design = design_sex.ad #input design matrix									
+#compare = c("F.AD", "M.AD")	##compare													
 #corrType="spearman"	##corrType
 
 #walltime = 80 	##timePerJob
@@ -58,8 +54,8 @@ ddcorAllParallel <- function(inputMat, design, compare, outputFile,
 	corr_cutoff = 0.99, getDCorAvg = FALSE, dCorAvgType = "gene_average",
 	dCorAvgMethod = "median", signType = "none", oneSidedPVal = FALSE, 
 	perBatch = 10, coresPerJob = 2, timePerJob = 60, memPerJob = 2000, 
-	batchConfig = "inst/config/batchConfig_Zhang.R", batchDir = "batchRegistry",
-	batchWarningLevel = 0, batchSeed = 12345, maxRetries = 3, testJob=TRUE){
+	batchConfig = system.file("inst/config/batchConfig_Zhang.R"), batchDir = "batchRegistry",
+	batchWarningLevel = 0, batchSeed = 12345, maxRetries = 3, testJob=FALSE){
 
 	## REMOVED PARAMETERS 
 	
@@ -76,12 +72,13 @@ ddcorAllParallel <- function(inputMat, design, compare, outputFile,
 		message("Creating batch job registry (will overwrite previous registry at same location)")
 		message(Sys.time())
 	}
-
-	system(paste0("rm -r ",batchDir)) #remove the old batchRegistry to make the new one
+	if(dir.exists(batchDir)){
+		system(paste0("rm -r ",batchDir)) #remove the old batchRegistry to make the new one
+	}
 
 	## Create simple registry:
-	reg <- makeExperimentRegistry(file.dir=batchDir, conf.file=batchConfig)
-	res = list(measure.memory = TRUE,walltime=walltime,memory=memory,cores=num_cores)
+	reg <- batchtools::makeExperimentRegistry(file.dir=batchDir, conf.file=batchConfig)
+	res = list(measure.memory = TRUE,walltime=timePerJob,memory=memPerJob,cores=coresPerJob)
 
 	matrix_part <- function(job,data){
 		blockA = data$blockA
@@ -90,12 +87,12 @@ ddcorAllParallel <- function(inputMat, design, compare, outputFile,
 		list(nPairs=nPairs) #problem
 	}
 
-	addAlgorithm(name="dgca",fun=ddcorAllParallelWorker,reg=reg)
+	batchtools::addAlgorithm(name="dgca",fun=ddcorAllParallelWorker,reg=reg)
 
-	tot_len = nrow(input_data) #total length of input genes
-	split_size = round(tot_len/split) #number of genes per split
+	tot_len = nrow(inputMat) #total length of input genes
+	split_size = round(tot_len/perBatch) #number of genes per split
 	count = 0 #starting at 0
-	total_runs = (split**2-split)/2 #total blocks we will run from the input data based on split
+	total_runs = (perBatch**2-perBatch)/2 #total blocks we will run from the input data based on split
 	algorithms = list(dgca=NA)
 	problems = list()
 
@@ -108,8 +105,8 @@ ddcorAllParallel <- function(inputMat, design, compare, outputFile,
 	if (((nPerms+1)*(split_size**2-split_size)/2)>=2**31-1){
 	  stop("You are comparing too many genes or doing too many permutations for this tool. Increase `split` or lower `nPerms`.")
 	}
-	for(a in 0:(split-1)){ #genes to compare from
-	  for(b in a:(split-1)){ #genes to compare to
+	for(a in 0:(perBatch-1)){ #genes to compare from
+	  for(b in a:(perBatch-1)){ #genes to compare to
 	    count = count + 1
 	    startA = (a*split_size+1) #start index for genesA...
 	    endA = ((a+1)*split_size)
@@ -125,100 +122,102 @@ ddcorAllParallel <- function(inputMat, design, compare, outputFile,
 	      next
 	    }
 	    #message(paste0("preparing block ",count," of ",total_runs,", a: ",a,", b: ",b))
-	    matA = input_data[startA:endA,] #get first chunk of genes to compare
-	    matB = input_data[startB:endB,] #get second chunk of genes to compare
+	    matA = inputMat[startA:endA,] #get first chunk of genes to compare
+	    matB = inputMat[startB:endB,] #get second chunk of genes to compare
 
 	    #adds the problem to the registry
-	    problems[paste0("block_",a,"_",b)] = addProblem(name=paste0("block_",a,"_",b),
+	    problems[paste0("block_",a,"_",b)] = batchtools::addProblem(name=paste0("block_",a,"_",b),
 	               fun = matrix_part,
 	               	# Required inputs:
 					# no_cores
 					# batchWarningsAsErrors
 					# matA
 					# matB
-					# design_mat
-					# groups
+					# design
+					# compare
 					# corrType
 					# nPerms
 					# verbose
 					# seed 
 	               data=list(matA=matA, matB=matB,
-	                         groups=groups,design_mat=design_mat,
-	                         n.cores=num_cores,nPerms=nPerms,corrType=corrType,
+	                         compare=compare,design=design,
+	                         n.cores=coresPerJob,nPerms=nPerms,corrType=corrType,
 	                         verbose=verbose, batchWarningLevel=batchWarningLevel, seed=batchSeed), 
 	               reg=reg)
 	    #message(Sys.time())
 	  } 
 	}
 
-	addExperiments() #add the problem x algorithm here
+	batchtools::addExperiments() #add the problem x algorithm here
 
-	id1 = head(findExperiments(algo.name = "dgca"), 1)
+	id1 = head(batchtools::findExperiments(algo.name = "dgca"), 1)
 
 	if(testJob){
 		message("testing one job that it will run")
 		message(Sys.time())
-		result <- testJob(id = id1)
+		result <- batchtools::testJob(id = id1)
 	}
 
-	message("submitting jobs")
+	message("Submitting jobs to cluster...")
 	message(Sys.time())
-	submitJobs(resources=res)
-	message("waiting for jobs to complete")
+	batchtools::submitJobs(resources=res)
+	
+	message("Waiting for jobs to complete...")
 	message(Sys.time())
-	job_retries = sapply(findSubmitted()$job.id, function(x) {0})
-	while(length(findNotDone()$job.id)>0){
-		waitForJobs(timeout=60)
-		err = findErrors()$job.id
-		exp = findExpired()$job.id
+	job_retries = sapply(batchtools::findSubmitted()$job.id, function(x) {0})
+	while(length(batchtools::findNotDone()$job.id)>0){
+		batchtools::waitForJobs(timeout=60)
+		err = batchtools::findErrors()$job.id
+		exp = batchtools::findExpired()$job.id
 		if (length(err)>0){
 			for(i in err){
 				job_retries[i] = job_retries[i] + 1
 				message(paste0("Found error in job ",i,", restarting, retry attempt ",job_retries[i]))
-				message(getErrorMessages(i))
-				submitJobs(i,resources=res)
+				cat(batchtools::getErrorMessages(i))
+				batchtools::submitJobs(i,resources=res)
 			}
 		}
 		if (length(exp)>0){
 			for(i in exp){
 				job_retries[i] = job_retries[i] + 1
-				message(paste0("Found expired job",i,", restarting with ",1.25**job_retries[i],"x more resources, retry attempt ",job_retries[i]))
+				message(paste0("Found expired job ",i,", restarting with ",1.25**job_retries[i],"x more resources, retry attempt ",job_retries[i]))
 				res_job = res
 				res_job$memory = round(res$memory*(1.25**job_retries[i]))
 				res_job$walltime = round(res$walltime*(1.25**job_retries[i]))
 				res_job$cores = round(res$cores*(1.25**job_retries[i]))
-				message(getLog(i))
-				submitJobs(i,resources=res_job)
+				cat(batchtools::getLog(i))
+				batchtools::submitJobs(i,resources=res_job)
 			}
 		}
 		if(max(job_retries)>=maxRetries){
 			message("Maximum number of retries exceeded, stopping jobs...")
-			killJobs()
+			batchtools::killJobs()
 			reg <<- reg
 			stop("Automatic retry failed, registry available for debugging at `reg`.")
 		}
 	}
 
-	message("writing out chunks")
+	message("Writing out results in chunks (unsorted)...")
 	message(Sys.time())
 
-	for (i in findDone()$job.id){ #for now
+	for (i in batchtools::findDone()$job.id){ #for now
 		message(paste0("Writing chunk ",i," of ",count))
 		message(Sys.time())
-		result = loadResult(i)
+		result = batchtools::loadResult(i)
 	   if (i==1){
-		   write.table(result,file = outputFile,sep = "\t",col.names = T,row.names=F,quote=F) #write sequentially to file, create file
+		   utils::write.table(result,file = outputFile,sep = "\t",col.names = T,row.names=F,quote=F) #write sequentially to file, create file
 		   if(sigOutput){
-			   write.table(result[result[,"qValDiff"]<=0.05,],file = paste0(outputFile,".signif.txt"),
+			   utils::write.table(result[result[,"qValDiff"]<=0.05,],file = paste0(outputFile,".signif.txt"),
 			               sep = "\t",col.names = T,row.names=F,quote=F)
 		   }
 	   } else {
-		   write.table(result,file = outputFile,append = T, sep = "\t",col.names = F,row.names=F,quote=F) #write sequentially to file, append to file already made
+		   utils::write.table(result,file = outputFile,append = T, sep = "\t",col.names = F,row.names=F,quote=F) #write sequentially to file, append to file already made
 		   if(sigOutput){
-			   write.table(result[result[,"qValDiff"]<=0.05,],file = paste0(outputFile,".signif.txt"),
+			   utils::write.table(result[result[,"qValDiff"]<=0.05,],file = paste0(outputFile,".signif.txt"),
 			               append = T, sep = "\t",col.names = F,row.names=F,quote=F)
 		   }
 	   }
 	}
-	message("completed!")
+	message("Completed!")
 	message(Sys.time())
+}

@@ -17,4 +17,3 @@ A data frame summarizing the GO term enrichments from each group, with columns o
 \description{
 Turns the list of lists from the moduleGO function into a more comprehensible data frame. Note that if a GO term enrichment does not exist for that module, it is set as NA.
 }
-

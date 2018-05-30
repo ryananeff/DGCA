@@ -22,4 +22,3 @@ Calculate two-sided p-values from a pairwise correlations matrix and a correspon
 \references{
 HMisc R package https://cran.r-project.org/web/packages/Hmisc/index.html
 }
-

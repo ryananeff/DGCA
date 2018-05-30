@@ -24,10 +24,9 @@ test_stat = rnorm(100, 1, 1)
 test_stat0 = rnorm(1000, 0, 1)
 emp_pvals = bigEmpPVals(test_stat, test_stat0)
 }
-\author{
-John Storey, Andrew McKenzie
-}
 \references{
 Please see ?qvalue::empPVals for more; from which this function was adapted.
 }
-
+\author{
+John Storey, Andrew McKenzie
+}

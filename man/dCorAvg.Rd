@@ -26,4 +26,3 @@ A list containing the average difference(s) in z-score and the empirical p-value
 \description{
 Finds the average (median or mean) of differential correlations for either one gene versus all others or for all gene pairs in the input matrix of differences in z-scores between conditions, with significance calculated via a comparison with the permutation samples.
 }
-

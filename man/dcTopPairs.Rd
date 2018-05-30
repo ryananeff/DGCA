@@ -6,7 +6,8 @@
 \usage{
 dcTopPairs(dcObject, nPairs, adjust = "none", plotFdr = FALSE,
   classify = TRUE, sigThresh = 1, corSigThresh = 0.05,
-  zScorePerm = NULL, verbose = FALSE, compare = NULL, secondMat = FALSE)
+  zScorePerm = NULL, verbose = FALSE, compare = NULL, secondMat = FALSE,
+  empOnly = FALSE)
 }
 \arguments{
 \item{dcObject}{The dcPair class object which you'd like to convert into a table.}
@@ -30,6 +31,8 @@ dcTopPairs(dcObject, nPairs, adjust = "none", plotFdr = FALSE,
 \item{compare}{Vector of two character strings, each corresponding to one group name in the design matrix, that should be compared.}
 
 \item{secondMat}{Logical indicator of whether there is a second matrix in the comparison or not.}
+
+\item{empOnly}{Whether or not we don't want to calculate qvalues for the empirical pvalues. Default = FALSE.}
 }
 \value{
 A table containing columns for each name in the considered gene pair (the order of which is arbitrary), correlation values in each condition, differences in z-score of the correlation, and p-values for that z-score difference.
@@ -37,4 +40,3 @@ A table containing columns for each name in the considered gene pair (the order 
 \description{
 Reads in a dcPair object and outputs a table of all gene pairs (or just the top n pairs), sorted by their unadjusted differential correlation p-value.
 }
-

@@ -5,14 +5,14 @@
 \title{Calls the DGCA pairwise pipeline.}
 \usage{
 ddcorAll(inputMat, design, compare, inputMatB = NULL, splitSet = NULL,
-  impute = FALSE, corrType = "pearson", nPairs = "all",
+  impute = FALSE, corrType = "pearson", nPairs = Inf,
   sortBy = "zScoreDiff", adjust = "perm", nPerms = 10, classify = TRUE,
   sigThresh = 1, corSigThresh = 0.05, heatmapPlot = FALSE,
   color_palette = NULL, verbose = FALSE, plotFdr = FALSE,
   corr_cutoff = 0.99, signType = "none", getDCorAvg = FALSE,
   dCorAvgType = "gene_average", dCorAvgMethod = "median",
   oneSidedPVal = FALSE, customize_heatmap = FALSE, heatmapClassic = FALSE,
-  corPower = 2, ...)
+  corPower = 2, cl = FALSE, empOnly = FALSE, ...)
 }
 \arguments{
 \item{inputMat}{The matrix (or data.frame) of values (e.g., gene expression values from an RNA-seq or microarray study) that you are interested in analyzing. The rownames of this matrix should correspond to the identifiers whose correlations and differential correlations you are interested in analyzing, while the columns should correspond to the rows of the design matrix and should be separable into your groups.}
@@ -69,6 +69,10 @@ ddcorAll(inputMat, design, compare, inputMatB = NULL, splitSet = NULL,
 
 \item{corPower}{The power to raise the correlations to before plotting the classic heatmap. Larger correlation powers emphasize larger correlation values relatively more compared to smaller correlation values.}
 
+\item{cl}{A parallel cluster object created by parallel::makeCluster(). If FALSE, defaults to single-core implementation. Default = FALSE.}
+
+\item{empOnly}{Whether or not we don't want to calculate qvalues for the empirical pvalues. Default = FALSE.}
+
 \item{...}{Additional plotting arguments if heatmapPlot = TRUE.}
 }
 \value{
@@ -82,4 +86,3 @@ data(darmanis); data(design_mat); darmanis_subset = darmanis[1:30, ]
 ddcor_res = ddcorAll(inputMat = darmanis_subset, design = design_mat,
 	compare = c("oligodendrocyte", "neuron"))
 }
-

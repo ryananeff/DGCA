@@ -31,4 +31,3 @@ dcorrs_res = dCorrs(rho1, n1, rho2, n2)
 \references{
 Tests For Rank Correlation Coefficients, I. http://biomet.oxfordjournals.org/content/44/3-4/470.full.pdf+html
 }
-

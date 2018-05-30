@@ -55,4 +55,3 @@ Extracts a data frame of the top enriched gene sets in gene ontology databases u
 \references{
 Agresti A: Categorical Data Analysis. 2012:70-77.
 }
-

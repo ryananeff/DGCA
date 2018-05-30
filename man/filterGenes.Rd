@@ -45,4 +45,3 @@ filtered_mat_both = filterGenes(inputMat = darmanis_subset,
 filtered_mat_all_groups = filterGenes(inputMat = darmanis_subset,
  design = design_mat, filterTypes = "dispersion", allGroups = TRUE)
 }
-

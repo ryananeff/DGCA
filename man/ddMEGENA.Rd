@@ -42,4 +42,3 @@ A list containing a the planar filter network, the data frame of identified diff
 \description{
 Takes a table of results from a DGCA analysis and inputs it into the MEGENA package pipeline.
 }
-

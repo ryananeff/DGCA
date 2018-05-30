@@ -26,4 +26,3 @@ data(darmanis); data(design_mat); darmanis_subset = darmanis[1:30, ]
 groups_from_design = getGroupsFromDesign(inputMat = darmanis_subset, design = design_mat)
 str(groups_from_design)
 }
-

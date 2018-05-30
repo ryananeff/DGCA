@@ -11,12 +11,12 @@
 #' @param verbose Whether summaries of the operations should be reported.
 #' @param compare Vector of two character strings, each corresponding to one group name in the design matrix, that should be compared.
 #' @param secondMat Logical indicator of whether there is a second matrix in the comparison or not.
-#' @param cl A parallel cluster object created by parallel::makeCluster(). If FALSE, defaults to single-core implementation.
+#' @param empOnly Whether or not we don't want to calculate qvalues for the empirical pvalues. Default = FALSE.
 #' @return A table containing columns for each name in the considered gene pair (the order of which is arbitrary), correlation values in each condition, differences in z-score of the correlation, and p-values for that z-score difference.
 #' @export
 dcTopPairs <- function(dcObject, nPairs, adjust = "none", plotFdr = FALSE,
 	classify = TRUE, sigThresh = 1, corSigThresh = 0.05, zScorePerm = NULL,
-	verbose = FALSE, compare = NULL, secondMat = FALSE,cl=NULL,empOnly=FALSE) {
+	verbose = FALSE, compare = NULL, secondMat = FALSE,empOnly=FALSE) {
 
 	SAF = getOption("stringsAsFactors")
 	on.exit(options(stringsAsFactors = SAF))
@@ -83,7 +83,7 @@ dcTopPairs <- function(dcObject, nPairs, adjust = "none", plotFdr = FALSE,
 			colnames_topPairs = c(colnames_topPairs, "pValDiff_adj")
 		} else {
 			pValDiffAdj = permQValue(dcObject, zScorePerm, secondMat = secondMat, testSlot = "ZDiff",
-				verbose = verbose, plotFdr = plotFdr,cl=cl,empOnly=empOnly)
+				verbose = verbose, plotFdr = plotFdr,empOnly=empOnly)
 			empPVals_sorted = pValDiffAdj[["empPVals"]][sorted_indx]
 			pValDiffAdj_sorted = pValDiffAdj[["pValDiffAdj"]][sorted_indx]
 			topPairs = data.frame(topPairs, empPVals_sorted,
