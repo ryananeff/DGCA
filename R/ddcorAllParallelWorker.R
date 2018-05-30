@@ -36,7 +36,7 @@ ddcorAllParallelWorker <- function(job,data,instance){
 		cat("Starting run now...\n")
 		cat(paste0(Sys.time(),"\n"))
 	}
-	ddcor_res = DGCA::ddcorAll(nPerms = data$nPerms, nPairs = nPairs, inputMat = data$matA, inputMatB=data$matB, design = data$design_mat,
+	ddcor_res = DGCA::ddcorAll(nPerms = data$nPerms, nPairs = nPairs, inputMat = data$matA, inputMatB=data$matB, design = data$design,
 	                   compare = data$groups, cl=cl, corrType = data$corrType,empOnly=TRUE,classify=FALSE)
 	#remove NAs caused by ??
 	ddcor_res = ddcor_res[!is.na(ddcor_res$pValDiff),]
