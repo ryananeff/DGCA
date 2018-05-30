@@ -43,7 +43,7 @@ ddcorAllParallelWorker <- function(job,data,instance){
                  qobj$values = rep(NA, length.out=length(pvalues))
             }else{
             rangevals = (max(pvalues)-min(pvalues))
-	        qvalue::qvalue(p = pvalues, lambda = seq(max(0.05,round(min(pvalues)+0.01,2)), 
+	        qvalue::qvalue(p = pvalues, lambda = seq(max(0.01,round(min(pvalues)+0.01,2)), 
 	                                                 min(round(max(pvalues)-0.01,2),0.95), 
 	                                                 min(0.01,round(rangevals/try_lambda,4))), lfdr.out=FALSE)
             }
