@@ -40,7 +40,7 @@ permQValue <- function(dcObject, permObject, secondMat, testSlot,
             }
         }, error=function(cond) {
           message("Here's the original error message:")
-          #message(cond)
+          message(cond)
           cat("\n")
           message("estimated pi0 <= 0 sometimes happens with relatively small numbers of gene pairs. Using a more conservative lambda sequence...")
           #if the qvalue computation returned without error, then its format should be a list; if not, there was an error.
@@ -49,7 +49,7 @@ permQValue <- function(dcObject, permObject, secondMat, testSlot,
               qvalue::qvalue(p = pvalues, lambda = seq(0.1, 0.9, 0.01),lfdr.out=FALSE)
             }, error=function(cond) {
               message("Here's the original error message:")
-              #message(cond)
+              message(cond)
               cat("\n")
               message("estimated pi0 <= 0 sometimes happens with relatively small numbers of gene pairs. Using a more conservative lambda sequence...")
               qobj = tryCatch(
@@ -57,7 +57,7 @@ permQValue <- function(dcObject, permObject, secondMat, testSlot,
                   qvalue::qvalue(p = pvalues, lambda = seq(0.2, 0.8, 0.01),lfdr.out=FALSE)
                 }, error=function(cond) {
                   message("Here's the original error message:")
-                  #message(cond)
+                  message(cond)
                   cat("\n")
                   message("estimated pi0 <= 0 sometimes happens with relatively small numbers of gene pairs. Using a more conservative lambda sequence...")
                   qobj = tryCatch(
@@ -65,7 +65,7 @@ permQValue <- function(dcObject, permObject, secondMat, testSlot,
                       qvalue::qvalue(p = pvalues, lambda = seq(0.3, 0.7, 0.01),lfdr.out=FALSE)
                     }, error=function(cond) {
                       message("Here's the original error message:")
-                      #message(cond)
+                      message(cond)
                       cat("\n")
                       message("estimated pi0 <= 0 sometimes happens with relatively small numbers of gene pairs. Using a more conservative lambda sequence... if this doesn't work, will report the empirical p-values and the adjusted q-values as NA values to indicate that q-value adjustment did not work.")
                       qobj = list()
