@@ -9,7 +9,7 @@
 #' @return A list containing a vectof of empirical p-values and a vector of q-values, both of the same length as the original actual test statistics.
 #' @export
 permQValue <- function(dcObject, permObject, secondMat, testSlot,
-  verbose = FALSE, plotFdr = FALSE,cl=NULL){
+  verbose = FALSE, plotFdr = FALSE,cl=NULL,empOnly=FALSE){
 
   test_stat_actual = slot(dcObject, testSlot)
   if(!secondMat) test_stat_actual = test_stat_actual[upper.tri(test_stat_actual)]
@@ -24,53 +24,57 @@ permQValue <- function(dcObject, permObject, secondMat, testSlot,
   pvalues = bigEmpPVals(stat = abs(test_stat_actual), stat0 = abs(perm_stats))
 
   message("Calculating qvalues from the empirical p-values.")
-
-  qobj = tryCatch(
-    {
-      qvalue::qvalue(p = pvalues, lambda = seq(0.05, 0.95, 0.05), lfdr.out=FALSE)
-    }, error=function(cond) {
-      message("Here's the original error message:")
-      message(cond)
-      cat("\n")
-      message("estimated pi0 <= 0 sometimes happens with relatively small numbers of gene pairs. Using a more conservative lambda sequence...")
-      return(NA)
-      #if the qvalue computation returned without error, then its format should be a list; if not, there was an error.
-      qobj = tryCatch(
-        {
-          qvalue::qvalue_truncp(p = pvalues, lambda = seq(0.1, 0.9, 0.05),lfdr.out=FALSE)
-        }, error=function(cond) {
-          message("Here's the original error message:")
-          message(cond)
-          cat("\n")
-          message("estimated pi0 <= 0 sometimes happens with relatively small numbers of gene pairs. Using a more conservative lambda sequence...")
-          return(NA)
-          qobj = tryCatch(
-            {
-              qvalue::qvalue_truncp(p = pvalues, lambda = seq(0.2, 0.8, 0.05),lfdr.out=FALSE)
-            }, error=function(cond) {
-              message("Here's the original error message:")
-              message(cond)
-              cat("\n")
-              message("estimated pi0 <= 0 sometimes happens with relatively small numbers of gene pairs. Using a more conservative lambda sequence...")
-              return(NA)
-              qobj = tryCatch(
-                {
-                  qvalue::qvalue_truncp(p = pvalues, lambda = seq(0.3, 0.7, 0.05),lfdr.out=FALSE)
-                }, error=function(cond) {
-                  message("Here's the original error message:")
-                  message(cond)
-                  cat("\n")
-                  message("estimated pi0 <= 0 sometimes happens with relatively small numbers of gene pairs. Using a more conservative lambda sequence... if this doesn't work, will report the empirical p-values and the adjusted q-values as NA values to indicate that q-value adjustment did not work.")
-                  qobj$qvalues = rep(NA, length(pvalues))
-                  return(qobj)
-              })
-          })
+  if(!empOnly){
+    qobj = tryCatch(
+      {
+        qvalue::qvalue(p = pvalues, lambda = seq(0.05, 0.95, 0.05), lfdr.out=FALSE)
+      }, error=function(cond) {
+        message("Here's the original error message:")
+        message(cond)
+        cat("\n")
+        message("estimated pi0 <= 0 sometimes happens with relatively small numbers of gene pairs. Using a more conservative lambda sequence...")
+        return(NA)
+        #if the qvalue computation returned without error, then its format should be a list; if not, there was an error.
+        qobj = tryCatch(
+          {
+            qvalue::qvalue_truncp(p = pvalues, lambda = seq(0.1, 0.9, 0.05),lfdr.out=FALSE)
+          }, error=function(cond) {
+            message("Here's the original error message:")
+            message(cond)
+            cat("\n")
+            message("estimated pi0 <= 0 sometimes happens with relatively small numbers of gene pairs. Using a more conservative lambda sequence...")
+            return(NA)
+            qobj = tryCatch(
+              {
+                qvalue::qvalue_truncp(p = pvalues, lambda = seq(0.2, 0.8, 0.05),lfdr.out=FALSE)
+              }, error=function(cond) {
+                message("Here's the original error message:")
+                message(cond)
+                cat("\n")
+                message("estimated pi0 <= 0 sometimes happens with relatively small numbers of gene pairs. Using a more conservative lambda sequence...")
+                return(NA)
+                qobj = tryCatch(
+                  {
+                    qvalue::qvalue_truncp(p = pvalues, lambda = seq(0.3, 0.7, 0.05),lfdr.out=FALSE)
+                  }, error=function(cond) {
+                    message("Here's the original error message:")
+                    message(cond)
+                    cat("\n")
+                    message("estimated pi0 <= 0 sometimes happens with relatively small numbers of gene pairs. Using a more conservative lambda sequence... if this doesn't work, will report the empirical p-values and the adjusted q-values as NA values to indicate that q-value adjustment did not work.")
+                    qobj$qvalues = rep(NA, length.out=length(pvalues))
+                    return(qobj)
+                })
+            })
+        })
       })
-    })
 
-  if(verbose) summary(qobj)
-  if(plotFdr) plot(qobj)
+    if(verbose) summary(qobj)
+    if(plotFdr) plot(qobj)
 
-  return(list(empPVals = pvalues, pValDiffAdj = qobj$qvalues))
+    return(list(empPVals = pvalues, pValDiffAdj = qobj$qvalues))
+    }else{
+      message("Skipping q-value calculation step (perhaps to calculate it at a later step?)")
+      return(list(empPVals = pvalues, pValDiffAdj = rep(NA,length.out=length(pvalues))))
+  }
 
 }

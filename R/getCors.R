@@ -94,6 +94,7 @@ getCors <- function(inputMat, design, inputMatB = NULL, impute = FALSE, corrType
 			}
 		if(!identical(cl,FALSE)){
 			clusterExport(cl=cl,c("matCorr","matNSamp","matCorSig"))
+			##TODO: calculate the correlation in chunks and write out to intermediate file
 			groupMatLists = parLapply(cl=cl,groupList,calcCorrs,
 			                          corrType=corrType,impute=impute)
 			names(groupMatLists) = designRes[[2]]
@@ -115,29 +116,52 @@ getCors <- function(inputMat, design, inputMatB = NULL, impute = FALSE, corrType
 		#use the design matrix to split the input matrix a list of sub-matrices
 		designRes = getGroupsFromDesign(inputMat = inputMat, design = design,
 			inputMatB = inputMatB, secondMat = TRUE)
-		groupListA = designRes[[1]]
-		groupListB = designRes[[2]]
 
 		#create list of lists to store the results
-		groupMatLists = as.list(rep(NA, length(groupListA)))
+		groupMatLists = as.list(rep(NA, length(designRes[[1]])))
 		names(groupMatLists) = designRes[[3]]
 
 		###################################
 		#calculate the correlation-related matrices for each of the sub-matrices
-
-		for(i in 1:length(groupListA)){
-
+		calcCorrs2samp <- function(mats,corrType,impute){
+			matA = mats[[1]] # get the matrices back
+			matB = mats[[2]]
 			#for extensibility, the first two fxns below can accept multiple matrices
-			corr = matCorr(matA = t(groupListA[[i]]), corrType = corrType,
-				matB = t(groupListB[[i]]), secondMat = TRUE)
+			corr = matCorr(matA=t(matA),matB=t(matB),corrType=corrType,secondMat=TRUE)
+			nsamp = matNSamp(matA = t(matA),matB=t(matB),impute=impute,secondMat=TRUE)
+			pval = matCorSig(corr,nsamp,secondMat=TRUE)
 
-			nsamp = matNSamp(matA = t(groupListA[[i]]), impute = impute,
-				matB = t(groupListB[[i]]), secondMat = TRUE)
+			return(list(corrs = corr, pvals = pval, nsamps = nsamp))
+		}
+		if(!identical(cl,FALSE)){
+			clusterExport(cl=cl,c("matCorr","matNSamp","matCorSig"))
+			##replacement for python zip() function to allow submission as parallel job
+			zipLists = list()
+			for (i in 1:length(designRes[[1]])){
+				zipLists[[i]]=list(designRes[[1]][[i]],designRes[[2]][[i]]) #this gets us into the right format while using the same memory as non-parallel case
+			}
+			groupMatLists = parLapply(cl=cl,zipLists,calcCorrs2samp,
+			                          corrType=corrType,impute=impute)
+			names(groupMatLists) = designRes[[3]]
+			groupMatLists <<- groupMatLists
+		}else{
+			groupListA = designRes[[1]]
+			groupListB = designRes[[2]]
+			
+			for(i in 1:length(groupListA)){
 
-			pval = matCorSig(corr, nsamp, cl=cl, secondMat = TRUE)
+				#for extensibility, the first two fxns below can accept multiple matrices
+				corr = matCorr(matA = t(groupListA[[i]]), corrType = corrType,
+					matB = t(groupListB[[i]]), secondMat = TRUE)
 
-			groupMatLists[[i]] = list(corrs = corr, pvals = pval, nsamps = nsamp)
+				nsamp = matNSamp(matA = t(groupListA[[i]]), impute = impute,
+					matB = t(groupListB[[i]]), secondMat = TRUE)
 
+				pval = matCorSig(corr, nsamp, secondMat = TRUE)
+
+				groupMatLists[[i]] = list(corrs = corr, pvals = pval, nsamps = nsamp)
+
+			}
 		}
 
 	}

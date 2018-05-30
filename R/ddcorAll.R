@@ -41,7 +41,7 @@ ddcorAll <- function(inputMat, design, compare, inputMatB = NULL, splitSet = NUL
 	corSigThresh = 0.05, heatmapPlot = FALSE, color_palette = NULL, verbose = FALSE, plotFdr = FALSE,
 	corr_cutoff = 0.99, signType = "none", getDCorAvg = FALSE, dCorAvgType = "gene_average",
 	dCorAvgMethod = "median", oneSidedPVal = FALSE, customize_heatmap = FALSE,
-	heatmapClassic = FALSE, corPower = 2, cl=NULL, ...){
+	heatmapClassic = FALSE, corPower = 2, cl=NULL, empOnly=FALSE,...){
 
 	################################
 	# check inputs
@@ -140,14 +140,14 @@ ddcorAll <- function(inputMat, design, compare, inputMatB = NULL, splitSet = NUL
 		ddcor_table = dcTopPairs(dcObject = ddcor_res, nPairs = nPairs,
 			adjust = adjust, plotFdr = plotFdr, classify = classify, compare = compare,
 			sigThresh = sigThresh, corSigThresh = corSigThresh, verbose = verbose,
-			secondMat = secondMat,cl=cl)
+			secondMat = secondMat,cl=cl,empOnly=empOnly)
 	}
 
 	if(adjust == "perm"){
 		ddcor_table = dcTopPairs(dcObject = ddcor_res, nPairs = nPairs,
 			adjust = adjust, plotFdr = plotFdr, classify = classify, compare = compare,
 			sigThresh = sigThresh, corSigThresh = corSigThresh,
-			zScorePerm = ddcor_perm, verbose = verbose, secondMat = secondMat,cl=cl)
+			zScorePerm = ddcor_perm, verbose = verbose, secondMat = secondMat,cl=cl,empOnly=empOnly)
 	}
 
 	#############################

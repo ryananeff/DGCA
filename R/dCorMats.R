@@ -29,6 +29,10 @@ dCorMats <- function(matA, nmatA, matB, nmatB,
 	matA[matA > corr_cutoff] = corr_cutoff
 	matB[matB > corr_cutoff] = corr_cutoff
 
+	## 5/29/18 RYAN: also need to apply cutoff to negative values
+	matA[matA < -corr_cutoff] = -corr_cutoff
+	matB[matB < -corr_cutoff] = -corr_cutoff
+
 	if(signType == "positive"){
 		matA[matA < 0] = 0
 		matB[matB < 0] = 0

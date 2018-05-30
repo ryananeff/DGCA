@@ -16,7 +16,7 @@
 #' @export
 dcTopPairs <- function(dcObject, nPairs, adjust = "none", plotFdr = FALSE,
 	classify = TRUE, sigThresh = 1, corSigThresh = 0.05, zScorePerm = NULL,
-	verbose = FALSE, compare = NULL, secondMat = FALSE,cl=NULL) {
+	verbose = FALSE, compare = NULL, secondMat = FALSE,cl=NULL,empOnly=FALSE) {
 
 	SAF = getOption("stringsAsFactors")
 	on.exit(options(stringsAsFactors = SAF))
@@ -83,7 +83,7 @@ dcTopPairs <- function(dcObject, nPairs, adjust = "none", plotFdr = FALSE,
 			colnames_topPairs = c(colnames_topPairs, "pValDiff_adj")
 		} else {
 			pValDiffAdj = permQValue(dcObject, zScorePerm, secondMat = secondMat, testSlot = "ZDiff",
-				verbose = verbose, plotFdr = plotFdr,cl=cl)
+				verbose = verbose, plotFdr = plotFdr,cl=cl,empOnly=empOnly)
 			empPVals_sorted = pValDiffAdj[["empPVals"]][sorted_indx]
 			pValDiffAdj_sorted = pValDiffAdj[["pValDiffAdj"]][sorted_indx]
 			topPairs = data.frame(topPairs, empPVals_sorted,
@@ -92,9 +92,8 @@ dcTopPairs <- function(dcObject, nPairs, adjust = "none", plotFdr = FALSE,
 		}
 	}
 
-	message("Classifying the differential correlation calls.")
-
 	if(classify == TRUE){
+		message("Classifying the differential correlation calls.")
 		if(adjust == "none"){
 			class_list = dCorClass(corA, corApVal, corB, corBpVal, pValDiff_unadj,
 				sigThresh = sigThresh, corSigThresh = corSigThresh)

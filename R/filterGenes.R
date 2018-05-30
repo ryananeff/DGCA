@@ -63,7 +63,7 @@ filterGenes <- function(inputMat, filterTypes = "central",
     if("dispersion" %in% filterTypes){
       row_vars = matrixStats::rowVars(data.matrix(inputMat))
       if(filterDispersionType == "dispersion_index"){
-        row_means = rowMeans(data.matrix(inputMat))
+        row_means = rowMeans(data.matrix(inputMat))+0.00001 #to ensure no divide by zero for 0 mean rows (most of the time)
         row_dispersion = row_vars/abs(row_means)
       }
       if(filterDispersionType == "cv"){

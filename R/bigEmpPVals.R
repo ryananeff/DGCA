@@ -20,7 +20,7 @@ bigEmpPVals <- function(stat, stat0, increasing = TRUE){
 
   message("Sorting the combination of the actual and permuted test statistics.")
   #create and order a logical vector for the presence of actual vs empirical test stats
-  v = c(rep(TRUE, m), rep(FALSE, m0))
+  v = c(rep(TRUE, length.out=m), rep(FALSE, length.out=m0))
   if(increasing){
     v = v[sort.list(c(stat, stat0), decreasing = TRUE, method = "radix", na.last = NA)]
   } else {
