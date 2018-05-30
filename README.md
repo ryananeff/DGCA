@@ -23,10 +23,11 @@ install.packages("DGCA")
 You can install the development version of DGCA from github with:
 
 ```R
-# install.packages("devtools")
-devtools::install_github("andymckenzie/DGCA")
+install.packages("devtools","withr")
+source("https://bioconductor.org/biocLite.R")
+withr::with_libpaths("~/.Rlib",devtools::install_github("nosarcasm/DGCA",repos=biocinstallRepos())
 ```
-
+i
 ## Basic Example
 
 ```R
