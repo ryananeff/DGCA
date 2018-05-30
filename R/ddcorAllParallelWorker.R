@@ -40,7 +40,7 @@ ddcorAllParallelWorker <- function(job,data,instance){
 	      {
             if (( max(pvalues)-0.01 <= ( min(pvalues)+0.01 ) )){
                  qobj = list()
-                 qobj$values = rep(NA, length.out=length(pvalues))
+                 qobj$qvalues = rep(NA, length.out=length(pvalues))
             }else{
             rangevals = (max(pvalues)-min(pvalues))
 	        qvalue::qvalue(p = pvalues, lambda = seq(max(0.01,round(min(pvalues)+0.01,2)), 
