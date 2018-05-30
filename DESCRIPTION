@@ -19,7 +19,8 @@ Author: Bin Zhang [aut],
 Maintainer: Ryan Neff <ryan.neff@icahn.mssm.edu>
 Depends: R (>= 3.4.3)
 Imports: WGCNA, matrixStats, methods, qvalue, batchtools, doParallel, 
-        parallel, grDevices, graphics, utils, dynamicTreeCut
+        parallel, grDevices, graphics, utils, dynamicTreeCut, 
+        fastcluster
 Suggests: knitr, impute, gplots, fdrtool, testthat, ggplot2, plotrix,
         GOstats, HGNChelper, org.Hs.eg.db, AnnotationDbi, abind,
         MEGENA, Matrix, doMC, igraph, cowplot, stats
