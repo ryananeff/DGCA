@@ -142,7 +142,8 @@ ddcorAllParallel <- function(inputMat, design, compare, outputFile,
 	               data=list(matA=matA, matB=matB,
 	                         compare=compare,design=design,
 	                         n.cores=coresPerJob,nPerms=nPerms,corrType=corrType,
-	                         verbose=verbose, batchWarningLevel=batchWarningLevel, seed=batchSeed), 
+	                         verbose=verbose, batchWarningLevel=batchWarningLevel, seed=batchSeed,
+	                         libloc = paste0(system.file(package="DGCA"),"/../")), 
 	               reg=reg)
 	    #message(Sys.time())
 	  } 
@@ -173,7 +174,7 @@ ddcorAllParallel <- function(inputMat, design, compare, outputFile,
 			for(i in err){
 				job_retries[i] = job_retries[i] + 1
 				message(paste0("Found error in job ",i,", restarting, retry attempt ",job_retries[i]))
-				cat(batchtools::getErrorMessages(i))
+				print(batchtools::getErrorMessages(i))
 				batchtools::submitJobs(i,resources=res)
 			}
 		}
@@ -185,7 +186,7 @@ ddcorAllParallel <- function(inputMat, design, compare, outputFile,
 				res_job$memory = round(res$memory*(1.25**job_retries[i]))
 				res_job$walltime = round(res$walltime*(1.25**job_retries[i]))
 				res_job$cores = round(res$cores*(1.25**job_retries[i]))
-				cat(batchtools::getLog(i))
+				print(batchtools::getLog(i))
 				batchtools::submitJobs(i,resources=res_job)
 			}
 		}

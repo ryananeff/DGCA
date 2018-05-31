@@ -18,6 +18,8 @@ ddcorAllParallelWorker <- function(job,data,instance){
 	# nPerms
 	# verbose
 	# seed
+	print(data$libloc)
+	library("DGCA",lib.loc=data$libloc)
 
 	if(data$verbose){
 		print(attributes(data))
@@ -28,6 +30,10 @@ ddcorAllParallelWorker <- function(job,data,instance){
 	cl<-parallel::makeCluster(data$n.cores)
 	doParallel::registerDoParallel(cl)
 
+	filepath = system.file("config/ddcorClasses.R",package="DGCA",lib.loc=data$libloc)
+	parallel::clusterExport(cl=cl,c("filepath"),envir=environment())
+	parallel::clusterEvalQ(cl=cl,eval(parse(filepath)))
+
 	set.seed(data$seed) #random seed for reproducibility
 
 	nPairs = (nrow(data$matA)*nrow(data$matA)-nrow(data$matA))/2+(nrow(data$matB)*nrow(data$matB)-nrow(data$matB))/2
@@ -36,8 +42,8 @@ ddcorAllParallelWorker <- function(job,data,instance){
 		cat("Starting run now...\n")
 		cat(paste0(Sys.time(),"\n"))
 	}
-	ddcor_res = DGCA::ddcorAll(nPerms = data$nPerms, nPairs = nPairs, inputMat = data$matA, inputMatB=data$matB, design = data$design,
-	                   compare = data$groups, cl=cl, corrType = data$corrType,empOnly=TRUE,classify=FALSE)
+	ddcor_res = ddcorAll(nPerms = data$nPerms, nPairs = nPairs, inputMat = data$matA, inputMatB=data$matB, design = data$design,
+	                   compare = data$compare, cl=cl, corrType = data$corrType,empOnly=TRUE,classify=FALSE)
 	#remove NAs caused by ??
 	ddcor_res = ddcor_res[!is.na(ddcor_res$pValDiff),]
 	ddcor_res = ddcor_res[!is.na(ddcor_res$empPVals),]
@@ -49,11 +55,11 @@ ddcorAllParallelWorker <- function(job,data,instance){
 		cat(paste0(Sys.time(),"\n"))
 	}
 	ddcor_res[,"pValDiff_adj"] <- NULL
-	ddcor_res[,"qValDiff"]=as.matrix(DGCA::getQValue(ddcor_res$pValDiff)$qvalues)
-	ddcor_res[,"qValDiff_emp"]=as.matrix(DGCA::getQValue(ddcor_res$empPVals)$qvalues)
-	classes = DGCA::dCorClass(ddcor_res[,3],ddcor_res[,4],ddcor_res[,5],ddcor_res[,6],ddcor_res[,"qValDiff"],convertClasses=T,corSigThresh=0.05)
+	ddcor_res[,"qValDiff"]=as.matrix(getQValue(ddcor_res$pValDiff)$qvalues)
+	ddcor_res[,"qValDiff_emp"]=as.matrix(getQValue(ddcor_res$empPVals)$qvalues)
+	classes = dCorClass(ddcor_res[,3],ddcor_res[,4],ddcor_res[,5],ddcor_res[,6],ddcor_res[,"qValDiff"],convertClasses=T,corSigThresh=0.05)
     ddcor_res[,"Classes_qval"] = classes
-    classes = DGCA::dCorClass(ddcor_res[,3],ddcor_res[,4],ddcor_res[,5],ddcor_res[,6],ddcor_res[,"qValDiff_emp"],convertClasses=T,corSigThresh=0.05)
+    classes = dCorClass(ddcor_res[,3],ddcor_res[,4],ddcor_res[,5],ddcor_res[,6],ddcor_res[,"qValDiff_emp"],convertClasses=T,corSigThresh=0.05)
     ddcor_res[,"Classes_qval_emp"] = classes
     if(data$verbose){
 		cat("Completed run\n")
