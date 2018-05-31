@@ -9,8 +9,8 @@ message("DGCA batch tools package! hooray!")
 message("loading data")
 message(Sys.time())
 
-load(file = system.file("data/darmanis.rda",package="DGCA")) #loads daramanis
-load(file = system.file("data/design_mat.rda",package="DGCA")) #loads design_mat
+data(darmanis) #loads daramanis
+data(design_mat) #loads design_mat
 
 ######################
 
