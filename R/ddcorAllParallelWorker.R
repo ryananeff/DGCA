@@ -18,12 +18,8 @@ ddcorAllParallelWorker <- function(job,data,instance){
 	# nPerms
 	# verbose
 	# seed
-	print(data$libloc)
+	
 	library("DGCA",lib.loc=data$libloc)
-
-	if(data$verbose){
-		print(attributes(data))
-	}
 	
 	options(warn=data$batchWarningLevel)
 
