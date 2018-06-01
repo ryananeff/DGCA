@@ -38,8 +38,13 @@ ddcorAllParallelWorker <- function(job,data,instance){
 		cat("Starting run now...\n")
 		cat(paste0(Sys.time(),"\n"))
 	}
-	ddcor_res = ddcorAll(nPerms = data$nPerms, nPairs = nPairs, inputMat = instance$matA, inputMatB=instance$matB, design = data$design,
-	                   compare = data$compare, cl=cl, corrType = data$corrType,empOnly=TRUE,classify=FALSE)
+	if(rownames(instance$matA)==rownames(instance$matB)){
+		ddcor_res = ddcorAll(nPerms = data$nPerms, nPairs = nPairs, inputMat = instance$matA, design = data$design,
+		                   compare = data$compare, cl=cl, corrType = data$corrType,empOnly=TRUE,classify=FALSE)
+	}else{
+		ddcor_res = ddcorAll(nPerms = data$nPerms, nPairs = nPairs, inputMat = instance$matA, inputMatB=instance$matB, design = data$design,
+		                   compare = data$compare, cl=cl, corrType = data$corrType,empOnly=TRUE,classify=FALSE)
+	}
 	#remove NAs caused by ??
 	ddcor_res = ddcor_res[!is.na(ddcor_res$pValDiff),]
 	ddcor_res = ddcor_res[!is.na(ddcor_res$empPVals),]
