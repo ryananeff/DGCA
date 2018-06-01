@@ -80,14 +80,19 @@ ddcorAllParallel <- function(inputMat, design, compare, outputFile,
 	reg <- batchtools::makeExperimentRegistry(file.dir=batchDir, conf.file=batchConfig)
 	res = list(measure.memory = TRUE,walltime=timePerJob,memory=memPerJob,cores=coresPerJob)
 
-	matrix_part <- function(job,data){
-		blockA = data$blockA
-		blockB = data$blockB
+	matrix_part <- function(job,data,startA, endA, startB, endB){
+	    blockA = data$input[startA:endA,] #get first chunk of genes to compare
+	    blockB = data$input[startB:endB,] #get second chunk of genes to compare
 		nPairs = (nrow(blockA)*nrow(blockA)-nrow(blockA))/2+(nrow(blockB)*nrow(blockB)-nrow(blockB))/2
-		list(nPairs=nPairs) #problem
+		list(matA=blockA, matB=blockB, nPairs=nPairs) #problem
 	}
 
 	batchtools::addAlgorithm(name="dgca",fun=ddcorAllParallelWorker,reg=reg)
+	batchtools::addProblem(name="input_data",fun=matrix_part,reg=reg,data = 
+           				list(input=input_data, compare=compare,design=design,
+	                         n.cores=coresPerJob,nPerms=nPerms,corrType=corrType,
+	                         verbose=verbose, batchWarningLevel=batchWarningLevel, seed=batchSeed,
+	                         libloc = paste0(system.file(package="DGCA"),"/../")))
 
 	tot_len = nrow(inputMat) #total length of input genes
 	split_size = round(tot_len/perBatch) #number of genes per split
@@ -105,6 +110,10 @@ ddcorAllParallel <- function(inputMat, design, compare, outputFile,
 	if (((nPerms+1)*(split_size**2-split_size)/2)>=2**31-1){
 	  stop("You are comparing too many genes or doing too many permutations for this tool. Increase `split` or lower `nPerms`.")
 	}
+	startAs = c()
+	endAs = c()
+	startBs = c()
+	endBs = c()
 	for(a in 0:(perBatch-1)){ #genes to compare from
 	  for(b in a:(perBatch-1)){ #genes to compare to
 	    count = count + 1
@@ -121,35 +130,15 @@ ddcorAllParallel <- function(inputMat, design, compare, outputFile,
 	    if((startA>=tot_len)|(startB>=tot_len)){ #if we've split too many times, skip
 	      next
 	    }
-	    #message(paste0("preparing block ",count," of ",total_runs,", a: ",a,", b: ",b))
-	    matA = inputMat[startA:endA,] #get first chunk of genes to compare
-	    matB = inputMat[startB:endB,] #get second chunk of genes to compare
-
-	    #adds the problem to the registry
-	    problems[paste0("block_",a,"_",b)] = batchtools::addProblem(name=paste0("block_",a,"_",b),
-	               fun = matrix_part,
-	               	# Required inputs:
-					# no_cores
-					# batchWarningsAsErrors
-					# matA
-					# matB
-					# design
-					# compare
-					# corrType
-					# nPerms
-					# verbose
-					# seed 
-	               data=list(matA=matA, matB=matB,
-	                         compare=compare,design=design,
-	                         n.cores=coresPerJob,nPerms=nPerms,corrType=corrType,
-	                         verbose=verbose, batchWarningLevel=batchWarningLevel, seed=batchSeed,
-	                         libloc = paste0(system.file(package="DGCA"),"/../")), 
-	               reg=reg)
-	    #message(Sys.time())
+	    message(paste0("preparing block ",count,", a: ",a,", b: ",b))
+	    startAs = c(startAs,startA)
+	    startBs = c(startBs,startB)
+	    endAs = c(endAs,endA)
+	    endBs = c(endBs,endB)
 	  } 
 	}
-
-	batchtools::addExperiments() #add the problem x algorithm here
+	pdes = list(input_data=data.table(startA=startAs,endA=endAs,startB=startBs,endB=endBs))
+	batchtools::addExperiments(pdes) #add the problem x algorithm here
 
 	id1 = head(batchtools::findExperiments(algo.name = "dgca"), 1)
 

@@ -32,13 +32,13 @@ ddcorAllParallelWorker <- function(job,data,instance){
 
 	set.seed(data$seed) #random seed for reproducibility
 
-	nPairs = (nrow(data$matA)*nrow(data$matA)-nrow(data$matA))/2+(nrow(data$matB)*nrow(data$matB)-nrow(data$matB))/2
+	nPairs = instance$nPairs
 
 	if(data$verbose){
 		cat("Starting run now...\n")
 		cat(paste0(Sys.time(),"\n"))
 	}
-	ddcor_res = ddcorAll(nPerms = data$nPerms, nPairs = nPairs, inputMat = data$matA, inputMatB=data$matB, design = data$design,
+	ddcor_res = ddcorAll(nPerms = data$nPerms, nPairs = nPairs, inputMat = instance$matA, inputMatB=instance$matB, design = data$design,
 	                   compare = data$compare, cl=cl, corrType = data$corrType,empOnly=TRUE,classify=FALSE)
 	#remove NAs caused by ??
 	ddcor_res = ddcor_res[!is.na(ddcor_res$pValDiff),]
