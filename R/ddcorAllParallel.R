@@ -137,7 +137,7 @@ ddcorAllParallel <- function(inputMat, design, compare, outputFile,
 	    endBs = c(endBs,endB)
 	  } 
 	}
-	pdes = list(input_data=data.table(startA=startAs,endA=endAs,startB=startBs,endB=endBs))
+	pdes = list(input_data=data.table::data.table(startA=startAs,endA=endAs,startB=startBs,endB=endBs))
 	batchtools::addExperiments(pdes) #add the problem x algorithm here
 
 	id1 = head(batchtools::findExperiments(algo.name = "dgca"), 1)
