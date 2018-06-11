@@ -21,11 +21,20 @@ bigEmpPVals <- function(stat, stat0, increasing = TRUE){
   message("Sorting the combination of the actual and permuted test statistics.")
   #create and order a logical vector for the presence of actual vs empirical test stats
   v = c(rep(TRUE, length.out=m), rep(FALSE, length.out=m0))
-  if(increasing){
-    v = v[sort.list(c(stat, stat0), decreasing = TRUE, method = "radix", na.last = NA)]
+  if((as.numeric(m)+as.numeric(m0))>=(2**31-1)){ #handle large input by switching methods
+      message("Long vector detected, using quicksort...")
+      if(increasing){
+         v = v[sort.list(c(stat, stat0), decreasing = TRUE, method = "quick", na.last = NA)]
+      } else {
+         v = v[sort.list(c(stat, stat0), decreasing = FALSE, method = "quick", na.last = NA)]
+      }
   } else {
-    v = v[sort.list(c(stat, stat0), decreasing = FALSE, method = "radix", na.last = NA)]
-  }
+      if(increasing){
+          v = v[sort.list(c(stat, stat0), decreasing = TRUE, method = "radix", na.last = NA)]
+      } else {
+          v = v[sort.list(c(stat, stat0), decreasing = FALSE, method = "radix", na.last = NA)]
+      }
+ }
 
   message("Finding the proportion of each actual test statistic greater than the permuted test statistics.")
   #at each position of the real test stats, find the proportion of real test stats that are greater than the null test stats
@@ -40,11 +49,19 @@ bigEmpPVals <- function(stat, stat0, increasing = TRUE){
     p[(m-n_zeros+1):m] = runif(n_zeros, min = first_zero, max = 1)
   }
 
-  #match to the original test stats; since we've already added fuzz, this should be very fast
-  if(increasing){
-    p = p[order(order(-stat,method="radix"))]
+  #match to the original test stats
+  if(as.numeric(length(p))>=(2**31-1)){
+      if(increasing){
+        p = p[order(order(-stat,method="quick"))]
+      } else {
+        p = p[order(order(stat,method="quick"))]
+      }
   } else {
-    p = p[order(order(stat,method="radix"))]
+      if(increasing){
+          p = p[order(order(-stat,method="radix"))]
+      } else {
+          p = p[order(order(stat,method="radix"))]
+      }
   }
 
   #correct numbers so that the actual test stats that are greater than all of the nulls can only have a min p-value of at most 1/#null test stats
