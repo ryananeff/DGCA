@@ -31,7 +31,7 @@ matCorr <- function(matA, corrType, use = "pairwise.complete.obs", matB = NULL, 
 			prev_num_cores = Sys.getenv("OMP_NUM_THREADS")
 			Sys.setenv(OMP_NUM_THREADS=1) 
 
-			corrs = parmigene::knnmi.all(matA,k=k,noise=noise)
+			corrs = parmigene::knnmi.all(t(matA),k=k,noise=noise)
 
 			Sys.setenv(OMP_NUM_THREADS=prev_num_cores)
 		}
@@ -53,7 +53,7 @@ matCorr <- function(matA, corrType, use = "pairwise.complete.obs", matB = NULL, 
 			prev_num_cores = Sys.getenv("OMP_NUM_THREADS")
 			Sys.setenv(OMP_NUM_THREADS=1) 
 
-			corrs = parmigene::knnmi.cross(matA,matB,k=k,noise=noise)
+			corrs = parmigene::knnmi.cross(t(matA),t(matB),k=k,noise=noise)
 
 			Sys.setenv(OMP_NUM_THREADS=prev_num_cores)
 		}
