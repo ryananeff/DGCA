@@ -16,16 +16,21 @@ dCorrs <- function(rho1, n1, rho2, n2, corrType = "pearson"){
 
 	if(!(all.equal(length(rho1), length(n1), length(rho2), length(n2)))) stop("All of the input vectors must be the same length.")
 
-	zr1 = atanh(rho1)
-	zr2 = atanh(rho2)
-
 	if(corrType == "pearson"){
+		zr1 = atanh(rho1)
+		zr2 = atanh(rho2)
 		diff12 = (zr2 - zr1)/sqrt((1/(n1 - 3)) + (1/(n2 - 3)))
 	}
 
 	if(corrType == "spearman"){
+		zr1 = atanh(rho1)
+		zr2 = atanh(rho2)
 		#http://biomet.oxfordjournals.org/content/44/3-4/470.full.pdf+html
 		diff12 = (zr2 - zr1)/sqrt((1.06/(n1 - 3)) + (1.06/(n2 - 3)))
+	}
+	if(corrType == "mutualinformation"){
+		#http://biomet.oxfordjournals.org/content/44/3-4/470.full.pdf+html
+		diff12 = (rho2-rho1)/sqrt((1.06/(n1 - 3)) + (1.06/(n2 - 3)))
 	}
 
 	return(diff12)
