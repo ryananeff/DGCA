@@ -21,7 +21,7 @@ getCors <- function(inputMat, design, inputMatB = NULL, impute = FALSE, corrType
 
 	##################################
 	#check inputs
-	if(!corrType %in% c("pearson", "spearman")) stop("corrType should be one of \"pearson\" or \"spearman\".\n")
+	if(!corrType %in% c("pearson", "spearman", "mutualinformation")) stop("corrType should be one of \"pearson\", \"spearman\", or \"mutualinformation\".\n")
 
 	if(!class(inputMat) %in% c("data.frame", "matrix")) stop("Input data should be either data.frame or matrix.\n")
 
@@ -88,8 +88,12 @@ getCors <- function(inputMat, design, inputMatB = NULL, impute = FALSE, corrType
 				#for extensibility, the first two fxns below can accept multiple matrices
 				corr = matCorr(t(group), corrType = corrType)
 				nsamp = matNSamp(t(group), impute = impute)
-				pval = matCorSig(corr, nsamp)
-
+				if(corrType!="mutualinformation"){
+					pval = matCorSig(corr, nsamp)
+				}
+				else{
+					pval = 1 - abs(corr) #placeholder, these values are just ranked. NOT PVALS
+				}
 				return(list(corrs = corr, pvals = pval, nsamps = nsamp))
 			}
 		if(!identical(cl,FALSE)){
@@ -153,8 +157,13 @@ getCors <- function(inputMat, design, inputMatB = NULL, impute = FALSE, corrType
 
 				nsamp = matNSamp(matA = t(groupListA[[i]]), impute = impute,
 					matB = t(groupListB[[i]]), secondMat = TRUE)
-
-				pval = matCorSig(corr, nsamp, secondMat = TRUE)
+				
+				if(corrType!="mutualinformation"){
+					pval = matCorSig(corr, nsamp, secondMat = TRUE)
+				}
+				else{
+					pval = 1 - abs(corr) #placeholder, these values are just ranked. NOT PVALS
+				}
 
 				groupMatLists[[i]] = list(corrs = corr, pvals = pval, nsamps = nsamp)
 
