@@ -92,7 +92,7 @@ getCors <- function(inputMat, design, inputMatB = NULL, impute = FALSE, corrType
 					pval = matCorSig(corr, nsamp)
 				}
 				else{
-					pval = 1 - abs(corr) #placeholder, these values are just ranked. NOT PVALS
+					pval = rep(NA,length.out=length(corr)) #placeholder
 				}
 				return(list(corrs = corr, pvals = pval, nsamps = nsamp))
 			}
@@ -162,7 +162,7 @@ getCors <- function(inputMat, design, inputMatB = NULL, impute = FALSE, corrType
 					pval = matCorSig(corr, nsamp, secondMat = TRUE)
 				}
 				else{
-					pval = 1 - abs(corr) #placeholder, these values are just ranked. NOT PVALS
+					pval = rep(NA,length.out=length(corr)) #placeholder
 				}
 
 				groupMatLists[[i]] = list(corrs = corr, pvals = pval, nsamps = nsamp)

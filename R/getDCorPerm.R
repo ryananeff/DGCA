@@ -17,9 +17,13 @@ getDCorPerm <- function(inputMat, design, compare, inputMatB = NULL, impute = FA
 
 	secondMat = FALSE
 	if(!is.null(inputMatB)){
+		corPermMat1 = array(dim = c(nrow(inputMat), nrow(inputMatB), nPerms))
+		corPermMat2 = array(dim = c(nrow(inputMat), nrow(inputMatB), nPerms))
 		zPermMat = array(dim = c(nrow(inputMat), nrow(inputMatB), nPerms))
 		secondMat = TRUE
 	} else {
+		corPermMat1 = array(dim = c(nrow(inputMat), nrow(inputMat), nPerms))
+		corPermMat2 = array(dim = c(nrow(inputMat), nrow(inputMatB), nPerms))
 		zPermMat = array(dim = c(nrow(inputMat), nrow(inputMat), nPerms))
 	}
 
@@ -38,19 +42,22 @@ getDCorPerm <- function(inputMat, design, compare, inputMatB = NULL, impute = FA
 		dcPairs_res = pairwiseDCor(corMats_res, compare, corr_cutoff = corr_cutoff,
 			secondMat = secondMat, signType = signType)
 		zscores = slot(dcPairs_res, "ZDiff")
-		return(zscores)
+		return(list("zscores"=zscores,"corrs"=corMats_res))
 	}
 
 	if(!identical(cl,FALSE)){
 		parallel::clusterExport(cl=cl,c("getCors","pairwiseDCor","getGroupsFromDesign",
 		                      "dCorMats","dCorrs"))
-		zPermMatList = parallel::parLapplyLB(cl,1:nPerms,calcZscores,
+		res = parallel::parLapplyLB(cl,1:nPerms,calcZscores,
 		                         inputMat=inputMat,design=design,compare=compare,
 		                         inputMatB=inputMatB,impute=impute,corrType=corrType,
 		                         corr_cutoff=corr_cutoff,signType=signType,clus=FALSE,
 		                         secondMat=secondMat)
+		res <<- res
 		for (i in 1:nPerms){
-			zPermMat[ , , i] = zPermMatList[[i]]
+			zPermMat[ , , i] = res[[i]]$zscores #zPermMatList
+			corPermMat1[ , , i] = res[[i]]$corrs@corMatList[[1]]$corrs #corPermMatList
+			corPermMat2[ , , i] = res[[i]]$corrs@corMatList[[2]]$corrs #corPermMatList
 		}
 	}else{
 		for(i in 1:nPerms){
@@ -68,9 +75,11 @@ getDCorPerm <- function(inputMat, design, compare, inputMatB = NULL, impute = FA
 				secondMat = secondMat, signType = signType)
 			zscores = slot(dcPairs_res, "ZDiff")
 			zPermMat[ , , i] = zscores
+			corPermMat1[ , , i] = corMats_res@corMatList[[1]]$corrs
+			corPermMat2[ , , i] = corMats_res@corMatList[[2]]$corrs
 		}
 	}
-	save(zPermMat, "zPermMat.Rsave")
-	return(zPermMat)
-
+	save(corPermMat1, corPermMat2, file="corPermMats.Rsave")
+	save(zPermMat, file="zPermMat.Rsave")
+	return(list("zPermMat"=zPermMat,"corPermMat1"=corPermMat1,"corPermMat2"=corPermMat2))
 }

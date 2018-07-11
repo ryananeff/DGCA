@@ -71,6 +71,10 @@ ddcorAll <- function(inputMat, design, compare, inputMatB = NULL, splitSet = NUL
 		warning("If you are not choosing permutation for p-value adjustment or calculating the differential correlation average, then you may be wasting time by generating permutation samples. Consider setting nPerms to 0.")
 	}
 
+	if((corrType=="mutualinformation") & ((nPerms==0)|(adjust!="perm"))){
+		stop("Mutual information p-values must be empirically calculated. Therefore, nPerms must be a positive integer and adjust set to 'perm'.")
+	}
+
 	if(!(is.numeric(nPairs) | nPairs == "all")){
 		stop("nPairs must either be numeric or be a character vector \"all\" to specify that all pairs should be returned.")
 	}
@@ -127,11 +131,24 @@ ddcorAll <- function(inputMat, design, compare, inputMatB = NULL, splitSet = NUL
 		impute = impute, corrType = corrType, corr_cutoff = corr_cutoff,
 		signType = signType, cl=cl)
 
-	if(nPerms > 0){
-		ddcor_perm = getDCorPerm(inputMat = inputMat, design = design,
+	ddcor_res_at_step <<- ddcor_res
+
+	if((nPerms > 0)){
+		res = getDCorPerm(inputMat = inputMat, design = design,
 			compare = compare, inputMatB = inputMatB,
 			impute = impute, corrType = corrType, nPerms = nPerms,
 			corr_cutoff = corr_cutoff, signType = signType, cl=cl)
+		ddcor_perm = res$zPermMat
+	}
+
+	if (corrType=="mutualinformation"){
+		corrs0A = res$corPermMat1
+		corrs0B = res$corPermMat2
+		corrsA = ddcor_res[[3]]
+		corrsB = ddcor_res[[5]]
+		pvalsA = adjustMIPval(corrsA,corrs0A,secondMat=secondMat)
+		pvalsB = adjustMIPval(corrsB,corrs0B,secondMat=secondMat)
+		
 	}
 
 	##############################
