@@ -1,4 +1,4 @@
-adjustMIPVal <- function(corrs, corPermMat, secondMat=FALSE, corr_cutoff=0.99){
+adjustMIPVal <- function(corrs, corPermMat, secondMat=FALSE){
 
   if(!secondMat) corrs = corrs[upper.tri(corrs)]
   corrs = as.numeric(corrs)
@@ -13,12 +13,12 @@ adjustMIPVal <- function(corrs, corPermMat, secondMat=FALSE, corr_cutoff=0.99){
   corrs0_lt_0 = abs(corrs0[corrs0<0]) #correct them so they are increasing
 
   pvalues_upper = bigEmpPVals(stat=corrs_gt_0,stat0=corrs0_gt_0,increasing=TRUE)
-  pvalues_lower = bbigEmpPVals(stat=corrs_lt_0,stat0=corrs0_lt_0,increasing=TRUE)
+  pvalues_lower = bigEmpPVals(stat=corrs_lt_0,stat0=corrs0_lt_0,increasing=TRUE)
 
   pvalues = rep(NA,length(corrs))
   pvalues[corrs>0] = pvalues_upper
   pvalues[corrs<0] = pvalues_lower
-  pvalues[corrs==0] = corr_cutoff #no MI therefore p-value of corr_cutoff
+  pvalues[corrs==0] = 1 #no MI therefore p-value of 1
 
   return(pvalues)
 }
