@@ -12,25 +12,34 @@
 #' n1 = rep(100, 100); n2 = rep(110, 100)
 #' dcorrs_res = dCorrs(rho1, n1, rho2, n2)
 #' @export
-dCorrs <- function(rho1, n1, rho2, n2, corrType = "pearson"){
+dCorrs <- function(rho1, n1, rho2, n2, corrType = "pearson", pval1=NULL, pval2=NULL){
 
 	if(!(all.equal(length(rho1), length(n1), length(rho2), length(n2)))) stop("All of the input vectors must be the same length.")
 
 	if(corrType == "pearson"){
+		#http://biomet.oxfordjournals.org/content/44/3-4/470.full.pdf+html
 		zr1 = atanh(rho1)
 		zr2 = atanh(rho2)
 		diff12 = (zr2 - zr1)/sqrt((1/(n1 - 3)) + (1/(n2 - 3)))
 	}
 
 	if(corrType == "spearman"){
+		#http://biomet.oxfordjournals.org/content/44/3-4/470.full.pdf+html
 		zr1 = atanh(rho1)
 		zr2 = atanh(rho2)
-		#http://biomet.oxfordjournals.org/content/44/3-4/470.full.pdf+html
 		diff12 = (zr2 - zr1)/sqrt((1.06/(n1 - 3)) + (1.06/(n2 - 3)))
 	}
 	if(corrType == "mutualinformation"){
-		#http://biomet.oxfordjournals.org/content/44/3-4/470.full.pdf+html
-		diff12 = (rho2-rho1)/sqrt((1.06/(n1 - 3)) + (1.06/(n2 - 3)))
+		#https://en.wikipedia.org/wiki/Mutual_information#Linear_correlation
+		if((pval1==NULL)|(pval2==NULL)){
+			#convert MI to pearson correlation coefficients under bivariate normal assumptions
+			zr1 = sqrt(1-10**(-2*rho1)) 
+			zr2 = sqrt(1-10**(-2*rho2))
+		} else {
+			zr1 = qnorm(1-(pval1/2)) #reverse z-score calculation from empirical p-values
+			zr2 = qnorm(1-(pval2/2)) #reverse z-score calculation from empirical p-values
+		}
+		diff12 = (zr2 - zr1)/sqrt((1/(n1 - 3)) + (1/(n2 - 3)))
 	}
 
 	return(diff12)

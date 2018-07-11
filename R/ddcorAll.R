@@ -148,7 +148,8 @@ ddcorAll <- function(inputMat, design, compare, inputMatB = NULL, splitSet = NUL
 		corrsB = ddcor_res[[5]]
 		pvalsA = adjustMIPval(corrsA,corrs0A,secondMat=secondMat)
 		pvalsB = adjustMIPval(corrsB,corrs0B,secondMat=secondMat)
-		
+		ddcor_res[[4]] = pvalsA
+		ddcor_res[[6]] = pvalsB
 	}
 
 	##############################
