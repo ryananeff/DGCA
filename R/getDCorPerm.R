@@ -70,6 +70,7 @@ getDCorPerm <- function(inputMat, design, compare, inputMatB = NULL, impute = FA
 			zPermMat[ , , i] = zscores
 		}
 	}
+	save(zPermMat, "zPermMat.Rsave")
 	return(zPermMat)
 
 }
