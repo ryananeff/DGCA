@@ -23,7 +23,7 @@ getDCorPerm <- function(inputMat, design, compare, inputMatB = NULL, impute = FA
 		secondMat = TRUE
 	} else {
 		corPermMat1 = array(dim = c(nrow(inputMat), nrow(inputMat), nPerms))
-		corPermMat2 = array(dim = c(nrow(inputMat), nrow(inputMatB), nPerms))
+		corPermMat2 = array(dim = c(nrow(inputMat), nrow(inputMat), nPerms))
 		zPermMat = array(dim = c(nrow(inputMat), nrow(inputMat), nPerms))
 	}
 
@@ -53,7 +53,7 @@ getDCorPerm <- function(inputMat, design, compare, inputMatB = NULL, impute = FA
 		                         inputMatB=inputMatB,impute=impute,corrType=corrType,
 		                         corr_cutoff=corr_cutoff,signType=signType,clus=FALSE,
 		                         secondMat=secondMat)
-		res <<- res
+		res_out <<- res
 		for (i in 1:nPerms){
 			zPermMat[ , , i] = res[[i]]$zscores #zPermMatList
 			corPermMat1[ , , i] = res[[i]]$corrs@corMatList[[1]]$corrs #corPermMatList

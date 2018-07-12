@@ -12,7 +12,7 @@
 #' n1 = rep(100, 100); n2 = rep(110, 100)
 #' dcorrs_res = dCorrs(rho1, n1, rho2, n2)
 #' @export
-dCorrs <- function(rho1, n1, rho2, n2, corrType = "pearson", pval1=NULL, pval2=NULL){
+dCorrs <- function(rho1, n1, rho2, n2, corrType = "pearson", pval1="none", pval2="none"){
 
 	if(!(all.equal(length(rho1), length(n1), length(rho2), length(n2)))) stop("All of the input vectors must be the same length.")
 
@@ -31,10 +31,12 @@ dCorrs <- function(rho1, n1, rho2, n2, corrType = "pearson", pval1=NULL, pval2=N
 	}
 	if(corrType == "mutualinformation"){
 		#https://en.wikipedia.org/wiki/Mutual_information#Linear_correlation
-		if((pval1==NULL)|(pval2==NULL)){
+		if((pval1=="none")|(pval2=="none")){
 			#convert MI to pearson correlation coefficients under bivariate normal assumptions
-			zr1 = sqrt(1-10**(-2*rho1)) 
-			zr2 = sqrt(1-10**(-2*rho2))
+			rho1 = sqrt(1-10**(-2*rho1)) 
+			rho2 = sqrt(1-10**(-2*rho2))
+			zr1 = atanh(rho1)
+			zr2 = atanh(rho2)
 		} else {
 			zr1 = qnorm(1-(pval1/2)) #reverse z-score calculation from empirical p-values
 			zr2 = qnorm(1-(pval2/2)) #reverse z-score calculation from empirical p-values

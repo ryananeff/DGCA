@@ -13,7 +13,7 @@
 #' @export
 
 matCorr <- function(matA, corrType, use = "pairwise.complete.obs", matB = NULL, secondMat = FALSE,
-                    k=3,noise=1e-12){
+                    k=5,k_iter_max=10){
 
 	if(!secondMat){
 		if(corrType %in% "pearson"){
@@ -24,16 +24,12 @@ matCorr <- function(matA, corrType, use = "pairwise.complete.obs", matB = NULL, 
 		}
 		if(corrType %in% "mutualinformation"){
 			#EXPERIMENTAL
-
-			### OMP_NUM_THREADS controls the number of threads knnmi uses ###
-			# we have to set it to 1 core because it may compete with other
-			#corr calculations going on at the same time
-			prev_num_cores = Sys.getenv("OMP_NUM_THREADS")
-			Sys.setenv(OMP_NUM_THREADS=1) 
-
-			corrs = parmigene::knnmi.all(t(matA),k=k,noise=noise)
-
-			Sys.setenv(OMP_NUM_THREADS=prev_num_cores)
+			matA_discrete = arules::discretizeDF(data.frame(matA), 
+			                                     default=list("method"="cluster", 
+			                                                  "centers"=k,"iter.max"=k_iter_max,
+			                                                  "right"=T,"include.lowest"=T))
+			corrs = infotheo::mutinformation(matA_discrete)
+			
 		}
 	}
 
@@ -46,16 +42,24 @@ matCorr <- function(matA, corrType, use = "pairwise.complete.obs", matB = NULL, 
 		}
 		if(corrType %in% "mutualinformation"){
 			#EXPERIMENTAL
+			df1 = matA
+			df2 = matB
 
-			### OMP_NUM_THREADS controls the number of threads knnmi uses ###
-			# we have to set it to 1 core because it may compete with other
-			#corr calculations going on at the same time
-			prev_num_cores = Sys.getenv("OMP_NUM_THREADS")
-			Sys.setenv(OMP_NUM_THREADS=1) 
+			mi_df_2mat = matrix(data=NA,nrow=ncol(df1),ncol=ncol(df2))
+			rownames(mi_df_2mat) = colnames(df1)
+			colnames(mi_df_2mat) = colnames(df2)
 
-			corrs = parmigene::knnmi.cross(t(matA),t(matB),k=k,noise=noise)
+			for(col1 in 1:length(colnames(df1))){
+			  for(col2 in col1:length(colnames(df2))){
+			    x_dis = arules::discretize(x=as.numeric(df1[,col1]), method="cluster", centers=k,iter.max=k_iter_max,right=T,include.lowest=T)
+			    y_dis = arules::discretize(x=as.numeric(df2[,col2]), method="cluster", centers=k,iter.max=k_iter_max,right=T,include.lowest=T)
+			    mi_df_2mat[col1,col2] = infotheo::mutinformation(x_dis,y_dis)
+			    mi_df_2mat[col2,col1] = mi_df_2mat[col1,col2]
+			  }
+			}
 
-			Sys.setenv(OMP_NUM_THREADS=prev_num_cores)
+			corrs = mi_df_2mat
+			
 		}
 	}
 

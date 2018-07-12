@@ -141,16 +141,27 @@ ddcorAll <- function(inputMat, design, compare, inputMatB = NULL, splitSet = NUL
 		ddcor_perm = res$zPermMat
 	}
 
+	ddcor_res_at_step <<- ddcor_res
+	res_out <<-res
+
 	if (corrType=="mutualinformation"){
 		corrs0A = res$corPermMat1
 		corrs0B = res$corPermMat2
-		corrsA = ddcor_res[[3]]
-		corrsB = ddcor_res[[5]]
-		pvalsA = adjustMIPval(corrsA,corrs0A,secondMat=secondMat)
-		pvalsB = adjustMIPval(corrsB,corrs0B,secondMat=secondMat)
-		ddcor_res[[4]] = pvalsA
-		ddcor_res[[6]] = pvalsB
+		corrsA = ddcor_res@corA
+		corrsB = ddcor_res@corB
+		pvalsA = as.matrix(adjustMIPval(corrsA,corrs0A,secondMat=secondMat))
+		pvalsB = as.matrix(adjustMIPval(corrsB,corrs0B,secondMat=secondMat))
+		pValArrA = matrix(NA,nrow=nrow(corrsA),ncol=ncol(corrsA))
+		pValArrB = matrix(NA,nrow=nrow(corrsB),ncol=ncol(corrsB))
+		rownames(pValArrA) = rownames(corrsA)
+		rownames(pValArrB) = rownames(corrsB)
+		pValArrA[upper.tri(pValArrA)] = pvalsA
+		pValArrB[upper.tri(pValArrB)] = pvalsB
+		ddcor_res@corPvalA = pValArrA
+		ddcor_res@corPvalB = pValArrB
 	}
+
+	ddcor_res_after_step <<- ddcor_res
 
 	##############################
 	# extract the differential correlation table as requested
