@@ -15,6 +15,9 @@
 dCorrs <- function(rho1, n1, rho2, n2, corrType = "pearson", pval1="none", pval2="none"){
 
 	if(!(all.equal(length(rho1), length(n1), length(rho2), length(n2)))) stop("All of the input vectors must be the same length.")
+	if((pval1!="none")&(pval2!="none")){
+		if(!(all.equal(length(rho1), length(n1), length(rho2), length(n2), length(pval1),length(pval2)))) stop("All of the input vectors must be the same length.")
+	}
 
 	if(corrType == "pearson"){
 		#http://biomet.oxfordjournals.org/content/44/3-4/470.full.pdf+html
@@ -33,11 +36,13 @@ dCorrs <- function(rho1, n1, rho2, n2, corrType = "pearson", pval1="none", pval2
 		#https://en.wikipedia.org/wiki/Mutual_information#Linear_correlation
 		if((pval1=="none")|(pval2=="none")){
 			#convert MI to pearson correlation coefficients under bivariate normal assumptions
+			message("Calculating first-pass MI z-score difference using bivariate normal assumptions")
 			rho1 = sqrt(1-10**(-2*rho1)) 
 			rho2 = sqrt(1-10**(-2*rho2))
 			zr1 = atanh(rho1)
 			zr2 = atanh(rho2)
 		} else {
+			message("Recalculating MI z-score difference using empirical p-values")
 			zr1 = qnorm(1-(pval1/2)) #reverse z-score calculation from empirical p-values
 			zr2 = qnorm(1-(pval2/2)) #reverse z-score calculation from empirical p-values
 		}

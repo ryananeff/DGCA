@@ -11,7 +11,8 @@
 #' @return A list of two differential correlation matrices: one for the difference in z-scores and one for the corresponding p-values.
 #' @export
 dCorMats <- function(matA, nmatA, matB, nmatB,
-	corr_cutoff = 0.99, corrType = "pearson", secondMat = FALSE, signType = "none"){
+	corr_cutoff = 0.99, corrType = "pearson", secondMat = FALSE, signType = "none",
+	pvalA="none",pvalB="none"){
 
 	if(!identical(dim(matA), dim(nmatA))){
 		stop("Matrices are not the same size.")
@@ -49,9 +50,14 @@ dCorMats <- function(matA, nmatA, matB, nmatB,
 		nmatA = nmatA[upper.tri(nmatA)]
 		matB = matB[upper.tri(matB)]
 		nmatB = nmatB[upper.tri(nmatB)]
-
-		dcorr_res = dCorrs(as.vector(matA), as.vector(nmatA),
-			as.vector(matB), as.vector(nmatB), corrType = corrType)
+		if ((corrType=="mutualinformation")&(pvalA!="none")&(pvalB!="none")){
+			dcorr_res = dCorrs(as.vector(matA), as.vector(nmatA),
+				as.vector(matB), as.vector(nmatB), corrType = corrType, 
+				pval1=pvalA, pval2=pvalB)
+		} else {
+			dcorr_res = dCorrs(as.vector(matA), as.vector(nmatA),
+				as.vector(matB), as.vector(nmatB), corrType = corrType)
+		}
 
 		diffs = matrix(NA, ncol = n_col, nrow = n_row)
 		diffs[upper.tri(diffs)] = dcorr_res
@@ -68,8 +74,14 @@ dCorMats <- function(matA, nmatA, matB, nmatB,
 
 	} else {
 
-		dcorr_res = dCorrs(as.vector(matA), as.vector(nmatA),
-			as.vector(matB), as.vector(nmatB), corrType = corrType)
+		if ((corrType=="mutualinformation")&(pvalA!="none")&(pvalB!="none")){
+			dcorr_res = dCorrs(as.vector(matA), as.vector(nmatA),
+				as.vector(matB), as.vector(nmatB), corrType = corrType, 
+				pval1=pvalA, pval2=pvalB)
+		} else {
+			dcorr_res = dCorrs(as.vector(matA), as.vector(nmatA),
+				as.vector(matB), as.vector(nmatB), corrType = corrType)
+		}
 
 		diffs = matrix(dcorr_res, ncol = n_col, nrow = n_row)
 		rownames(diffs) = rownames(matA)

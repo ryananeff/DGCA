@@ -145,6 +145,9 @@ ddcorAll <- function(inputMat, design, compare, inputMatB = NULL, splitSet = NUL
 	res_out <<-res
 
 	if (corrType=="mutualinformation"){
+		if(verbose){ message("Adjusting mutual information p-values empirically")}
+		nsampA = ddcor_res@corPvalA #retrieved from the placeholder from earlier
+		nsampB = ddcor_res@corPvalB #retrieved from the placeholder from earlier
 		corrs0A = res$corPermMat1
 		corrs0B = res$corPermMat2
 		corrsA = ddcor_res@corA
@@ -159,6 +162,20 @@ ddcorAll <- function(inputMat, design, compare, inputMatB = NULL, splitSet = NUL
 		pValArrB[upper.tri(pValArrB)] = pvalsB
 		ddcor_res@corPvalA = pValArrA
 		ddcor_res@corPvalB = pValArrB
+
+		if(verbose){ message("Adjusting mutual information z-scores and p-values empirically")}
+		AB_res = dCorMats(ddcor_res@corA, nsampA,
+			ddcor_res@corB, nsampB, corr_cutoff = corr_cutoff,
+			corrType = corrType, secondMat = secondMat, signType = signType,
+			pvalA=ddcor_res@corPvalA,pvalB=ddcor_res@corPvalB)
+
+		#may need these dimnames in the Zdiff matrix for dCorAvg
+		colnames(AB_res$diffs) = colnames(ddcor_res@corA)
+		rownames(AB_res$diffs) = rownames(ddcor_res@corA)
+
+		ddcor_res@ZDiff = AB_res$diffs
+		ddcor_res@PValDiff = AB_res$pvals
+
 	}
 
 	ddcor_res_after_step <<- ddcor_res
