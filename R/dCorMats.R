@@ -50,7 +50,7 @@ dCorMats <- function(matA, nmatA, matB, nmatB,
 		nmatA = nmatA[upper.tri(nmatA)]
 		matB = matB[upper.tri(matB)]
 		nmatB = nmatB[upper.tri(nmatB)]
-		if ((corrType=="mutualinformation")&(pvalA!="none")&(pvalB!="none")){
+		if ((corrType=="mutualinformation")&&(!identical(pvalA,"none")&&!identical(pvalB,"none"))){
 			dcorr_res = dCorrs(as.vector(matA), as.vector(nmatA),
 				as.vector(matB), as.vector(nmatB), corrType = corrType, 
 				pval1=pvalA, pval2=pvalB)

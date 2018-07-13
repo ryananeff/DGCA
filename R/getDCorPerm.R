@@ -13,7 +13,7 @@
 #' @return An array of permuted differences in z-scores calculated between conditions, with the third dimension corresponding to the number of permutations performed.
 #' @export
 getDCorPerm <- function(inputMat, design, compare, inputMatB = NULL, impute = FALSE,
-	nPerms = 10, corrType = "pearson", corr_cutoff = 0.99, signType = "none",cl=NULL){
+	nPerms = 10, corrType = "pearson", corr_cutoff = 0.99, signType = "none",cl=NULL, k=5,k_iter_max=10){
 
 	secondMat = FALSE
 	if(!is.null(inputMatB)){
@@ -28,16 +28,16 @@ getDCorPerm <- function(inputMat, design, compare, inputMatB = NULL, impute = FA
 	}
 
 	calcZscores <- function(iter,inputMat, design, compare, inputMatB = NULL, impute = FALSE,
-	 corrType = "pearson", corr_cutoff = 0.99, signType = "none",clus=NULL,secondMat=FALSE){
+	 corrType = "pearson", corr_cutoff = 0.99, signType = "none",clus=NULL,secondMat=FALSE, k=5,k_iter_max=10){
 		message("Calculating permutation number ", iter, ".")
 		inputMat_perm = inputMat[ , sample(ncol(inputMat)), drop = FALSE]
 		if(secondMat){
 			inputMatB_perm = inputMatB[ , sample(ncol(inputMatB)), drop = FALSE]
 			corMats_res = getCors(inputMat_perm, design = design,
-				inputMatB = inputMatB_perm, corrType = corrType, impute = impute,cl=clus)
+				inputMatB = inputMatB_perm, corrType = corrType, impute = impute,cl=clus, k=k,k_iter_max=k_iter_max)
 		} else {
 			corMats_res = getCors(inputMat_perm, design = design,
-				corrType = corrType, impute = impute,cl=clus)
+				corrType = corrType, impute = impute,cl=clus, k=k,k_iter_max=k_iter_max)
 		}
 		dcPairs_res = pairwiseDCor(corMats_res, compare, corr_cutoff = corr_cutoff,
 			secondMat = secondMat, signType = signType)
@@ -52,7 +52,7 @@ getDCorPerm <- function(inputMat, design, compare, inputMatB = NULL, impute = FA
 		                         inputMat=inputMat,design=design,compare=compare,
 		                         inputMatB=inputMatB,impute=impute,corrType=corrType,
 		                         corr_cutoff=corr_cutoff,signType=signType,clus=FALSE,
-		                         secondMat=secondMat)
+		                         secondMat=secondMat, k=k,k_iter_max=k_iter_max)
 		res_out <<- res
 		for (i in 1:nPerms){
 			zPermMat[ , , i] = res[[i]]$zscores #zPermMatList
@@ -66,10 +66,10 @@ getDCorPerm <- function(inputMat, design, compare, inputMatB = NULL, impute = FA
 			if(secondMat){
 				inputMatB_perm = inputMatB[ , sample(ncol(inputMatB)), drop = FALSE]
 				corMats_res = getCors(inputMat_perm, design = design,
-					inputMatB = inputMatB_perm, corrType = corrType, impute = impute,cl=FALSE)
+					inputMatB = inputMatB_perm, corrType = corrType, impute = impute,cl=FALSE, k=k,k_iter_max=k_iter_max)
 			} else {
 				corMats_res = getCors(inputMat_perm, design = design,
-					corrType = corrType, impute = impute,cl=FALSE)
+					corrType = corrType, impute = impute,cl=FALSE, k=k,k_iter_max=k_iter_max)
 			}
 			dcPairs_res = pairwiseDCor(corMats_res, compare, corr_cutoff = corr_cutoff,
 				secondMat = secondMat, signType = signType)

@@ -42,7 +42,7 @@ ddcorAll <- function(inputMat, design, compare, inputMatB = NULL, splitSet = NUL
 	corSigThresh = 0.05, heatmapPlot = FALSE, color_palette = NULL, verbose = FALSE, plotFdr = FALSE,
 	corr_cutoff = 0.99, signType = "none", getDCorAvg = FALSE, dCorAvgType = "gene_average",
 	dCorAvgMethod = "median", oneSidedPVal = FALSE, customize_heatmap = FALSE,
-	heatmapClassic = FALSE, corPower = 2, cl=FALSE, empOnly=FALSE,...){
+	heatmapClassic = FALSE, corPower = 2, cl=FALSE, empOnly=FALSE,k=5,k_iter_max=10,...){
 
 	################################
 	# check inputs
@@ -129,7 +129,7 @@ ddcorAll <- function(inputMat, design, compare, inputMatB = NULL, splitSet = NUL
 	ddcor_res = getDCors(inputMat = inputMat, design = design,
 		compare = compare, inputMatB = inputMatB,
 		impute = impute, corrType = corrType, corr_cutoff = corr_cutoff,
-		signType = signType, cl=cl)
+		signType = signType, cl=cl, k=k,k_iter_max=k_iter_max)
 
 	ddcor_res_at_step <<- ddcor_res
 
@@ -137,12 +137,12 @@ ddcorAll <- function(inputMat, design, compare, inputMatB = NULL, splitSet = NUL
 		res = getDCorPerm(inputMat = inputMat, design = design,
 			compare = compare, inputMatB = inputMatB,
 			impute = impute, corrType = corrType, nPerms = nPerms,
-			corr_cutoff = corr_cutoff, signType = signType, cl=cl)
+			corr_cutoff = corr_cutoff, signType = signType, cl=cl, k=k,k_iter_max=k_iter_max)
 		ddcor_perm = res$zPermMat
 	}
 
-	ddcor_res_at_step <<- ddcor_res
-	res_out <<-res
+	#ddcor_res_at_step <<- ddcor_res
+	#res_out <<-res
 
 	if (corrType=="mutualinformation"){
 		if(verbose){ message("Adjusting mutual information p-values empirically")}
@@ -163,22 +163,22 @@ ddcorAll <- function(inputMat, design, compare, inputMatB = NULL, splitSet = NUL
 		ddcor_res@corPvalA = pValArrA
 		ddcor_res@corPvalB = pValArrB
 
-		if(verbose){ message("Adjusting mutual information z-scores and p-values empirically")}
-		AB_res = dCorMats(ddcor_res@corA, nsampA,
-			ddcor_res@corB, nsampB, corr_cutoff = corr_cutoff,
-			corrType = corrType, secondMat = secondMat, signType = signType,
-			pvalA=ddcor_res@corPvalA,pvalB=ddcor_res@corPvalB)
+		#if(verbose){ message("Adjusting mutual information z-scores and p-values empirically")}
+		#AB_res = dCorMats(ddcor_res@corA, nsampA,
+		#	ddcor_res@corB, nsampB, corr_cutoff = corr_cutoff,
+		#	corrType = corrType, secondMat = secondMat, signType = signType,
+		#	pvalA=ddcor_res@corPvalA,pvalB=ddcor_res@corPvalB)
 
 		#may need these dimnames in the Zdiff matrix for dCorAvg
-		colnames(AB_res$diffs) = colnames(ddcor_res@corA)
-		rownames(AB_res$diffs) = rownames(ddcor_res@corA)
+		#colnames(AB_res$diffs) = colnames(ddcor_res@corA)
+		#rownames(AB_res$diffs) = rownames(ddcor_res@corA)
 
-		ddcor_res@ZDiff = AB_res$diffs
-		ddcor_res@PValDiff = AB_res$pvals
+		#ddcor_res@ZDiff = AB_res$diffs
+		#ddcor_res@PValDiff = AB_res$pvals
 
 	}
 
-	ddcor_res_after_step <<- ddcor_res
+	#ddcor_res_after_step <<- ddcor_res
 
 	##############################
 	# extract the differential correlation table as requested

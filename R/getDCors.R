@@ -15,11 +15,11 @@
 #'
 #' @export
 getDCors <- function(inputMat, design, compare, inputMatB = NULL, impute = FALSE, corrType = "pearson",
-	corr_cutoff = 0.99, signType = "none",cl=FALSE){
+	corr_cutoff = 0.99, signType = "none",cl=FALSE, k=5,k_iter_max=10){
 	design = design[,compare] #subset the matrix HERE to dramatically reduce the # of computations
 
 	corMats_res = getCors(inputMat = inputMat, design = design, inputMatB = inputMatB, corrType = corrType,
-		impute = impute,cl=cl)
+		impute = impute,cl=cl, k=k,k_iter_max=k_iter_max)
 	if(is.null(inputMatB)){
 		dcPairs_res = pairwiseDCor(corMats_res, compare = compare, corr_cutoff = corr_cutoff,
 			corrType = corrType, signType = signType)

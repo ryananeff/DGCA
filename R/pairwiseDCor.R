@@ -37,9 +37,9 @@ pairwiseDCor <- function(corMatsObj, compare, corr_cutoff = 0.99, corrType = "pe
 	names(dcPair) = c("corA", "corPvalA", "corB", "corPvalB",
 		"ZDiff", "PValDiff")
 	
-	matA <<- matA
-	matB <<- matB
-	AB_res <<- AB_res
+	#matA <<- matA
+	#matB <<- matB
+	#AB_res <<- AB_res
 
 	dcPair_res = new("dcPair",
 		corA = matA$corrs,
