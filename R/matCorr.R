@@ -26,9 +26,13 @@ matCorr <- function(matA, corrType, use = "pairwise.complete.obs", matB = NULL, 
 			#EXPERIMENTAL
 			matA_discrete = arules::discretizeDF(data.frame(matA), 
 			                                     default=list("method"="cluster", 
-			                                                  "centers"=k,"iter.max"=k_iter_max,
-			                                                  "right"=T,"include.lowest"=T))
+			                                                  "centers"=k,"iter.max"=k_iter_max))
 			corrs = infotheo::mutinformation(matA_discrete)
+			
+		}
+		if(corrType %in% "bicor"){
+			#EXPERIMENTAL
+			corrs = WGCNA::bicor(x=matA,use=use,quick=1)
 			
 		}
 	}
@@ -51,14 +55,19 @@ matCorr <- function(matA, corrType, use = "pairwise.complete.obs", matB = NULL, 
 
 			for(col1 in 1:length(colnames(df1))){
 			  for(col2 in col1:length(colnames(df2))){
-			    x_dis = arules::discretize(x=as.numeric(df1[,col1]), method="cluster", centers=k,iter.max=k_iter_max,right=T,include.lowest=T)
-			    y_dis = arules::discretize(x=as.numeric(df2[,col2]), method="cluster", centers=k,iter.max=k_iter_max,right=T,include.lowest=T)
+			    x_dis = arules::discretize(x=as.numeric(df1[,col1]), method="cluster", centers=k,iter.max=k_iter_max)
+			    y_dis = arules::discretize(x=as.numeric(df2[,col2]), method="cluster", centers=k,iter.max=k_iter_max)
 			    mi_df_2mat[col1,col2] = infotheo::mutinformation(x_dis,y_dis)
 			    mi_df_2mat[col2,col1] = mi_df_2mat[col1,col2]
 			  }
 			}
 
 			corrs = mi_df_2mat
+			
+		}
+		if(corrType %in% "bicor"){
+			#EXPERIMENTAL
+			corrs = WGCNA::bicor(x=matA,y=matB,use=use,quick=1)
 			
 		}
 	}

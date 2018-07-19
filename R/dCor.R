@@ -25,20 +25,25 @@ dCorrs <- function(rho1, n1, rho2, n2, corrType = "pearson", pval1="none", pval2
 		zr2 = atanh(rho2)
 		diff12 = (zr2 - zr1)/sqrt((1/(n1 - 3)) + (1/(n2 - 3)))
 	}
-
 	if(corrType == "spearman"){
 		#http://biomet.oxfordjournals.org/content/44/3-4/470.full.pdf+html
 		zr1 = atanh(rho1)
 		zr2 = atanh(rho2)
 		diff12 = (zr2 - zr1)/sqrt((1.06/(n1 - 3)) + (1.06/(n2 - 3)))
 	}
+	if(corrType == "bicor"){
+		#http://biomet.oxfordjournals.org/content/44/3-4/470.full.pdf+html
+		zr1 = atanh(rho1)
+		zr2 = atanh(rho2)
+		diff12 = (zr2 - zr1)/sqrt((1/(n1 - 3)) + (1/(n2 - 3)))
+	}
 	if(corrType == "mutualinformation"){
 		#https://en.wikipedia.org/wiki/Mutual_information#Linear_correlation
 		if(identical(pval1,"none")|identical(pval2,"none")){
 			#convert MI to pearson correlation coefficients under bivariate normal assumptions
 			message("Calculating first-pass MI z-score difference using bivariate normal assumptions")
-			rho1 = sqrt(1-10**(-2*rho1)) 
-			rho2 = sqrt(1-10**(-2*rho2))
+			rho1 = sqrt(1-exp(1)**(-2*rho1)) 
+			rho2 = sqrt(1-exp(1)**(-2*rho2))
 			zr1 = atanh(rho1)
 			zr2 = atanh(rho2)
 			diff12 = (zr2 - zr1)/sqrt((1/(n1 - 3)) + (1/(n2 - 3)))

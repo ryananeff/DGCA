@@ -40,7 +40,7 @@ getDCorPerm <- function(inputMat, design, compare, inputMatB = NULL, impute = FA
 				corrType = corrType, impute = impute,cl=clus, k=k,k_iter_max=k_iter_max)
 		}
 		dcPairs_res = pairwiseDCor(corMats_res, compare, corr_cutoff = corr_cutoff,
-			secondMat = secondMat, signType = signType)
+			secondMat = secondMat, signType = signType, corrType = corrType)
 		zscores = slot(dcPairs_res, "ZDiff")
 		return(list("zscores"=zscores,"corrs"=corMats_res))
 	}
@@ -72,7 +72,7 @@ getDCorPerm <- function(inputMat, design, compare, inputMatB = NULL, impute = FA
 					corrType = corrType, impute = impute,cl=FALSE, k=k,k_iter_max=k_iter_max)
 			}
 			dcPairs_res = pairwiseDCor(corMats_res, compare, corr_cutoff = corr_cutoff,
-				secondMat = secondMat, signType = signType)
+				secondMat = secondMat, signType = signType, corrType = corrType)
 			zscores = slot(dcPairs_res, "ZDiff")
 			zPermMat[ , , i] = zscores
 			corPermMat1[ , , i] = corMats_res@corMatList[[1]]$corrs

@@ -150,6 +150,8 @@ ddcorAll <- function(inputMat, design, compare, inputMatB = NULL, splitSet = NUL
 		nsampB = ddcor_res@corPvalB #retrieved from the placeholder from earlier
 		corrs0A = res$corPermMat1
 		corrs0B = res$corPermMat2
+		corrs0A <<- corrs0A
+		corrs0B <<- corrs0B
 		corrsA = ddcor_res@corA
 		corrsB = ddcor_res@corB
 		pvalsA = as.matrix(adjustMIPval(corrsA,corrs0A,secondMat=secondMat))
@@ -178,7 +180,7 @@ ddcorAll <- function(inputMat, design, compare, inputMatB = NULL, splitSet = NUL
 
 	}
 
-	#ddcor_res_after_step <<- ddcor_res
+	ddcor_res_after_step <<- ddcor_res
 
 	##############################
 	# extract the differential correlation table as requested

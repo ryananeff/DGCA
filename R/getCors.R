@@ -21,7 +21,7 @@ getCors <- function(inputMat, design, inputMatB = NULL, impute = FALSE, corrType
 
 	##################################
 	#check inputs
-	if(!corrType %in% c("pearson", "spearman", "mutualinformation")) stop("corrType should be one of \"pearson\", \"spearman\", or \"mutualinformation\".\n")
+	if(!corrType %in% c("pearson", "spearman", "mutualinformation","bicor")) stop("corrType should be one of \"pearson\", \"spearman\", \"mutualinformation\", or \"bicor\".\n")
 
 	if(!class(inputMat) %in% c("data.frame", "matrix")) stop("Input data should be either data.frame or matrix.\n")
 
