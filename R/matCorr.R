@@ -12,6 +12,8 @@
 #' matcor_res = matCorr(matA = darmanis_subset, corrType = "pearson")
 #' @export
 
+library(arules,lib.loc="~/.RlibDGCA")
+
 matCorr <- function(matA, corrType, use = "pairwise.complete.obs", matB = NULL, secondMat = FALSE,
                     k=5,k_iter_max=10){
 
