@@ -92,7 +92,7 @@ ddcorAllParallel <- function(inputMat, design, compare, outputFile,
            				list(input=input_data, compare=compare,design=design,
 	                         n.cores=coresPerJob,nPerms=nPerms,corrType=corrType,
 	                         verbose=verbose, batchWarningLevel=batchWarningLevel, seed=batchSeed,
-	                         libloc = paste0(system.file(package="DGCA"),"/../", k=k, k_iter_max=k_iter_max)))
+	                         libloc = paste0(system.file(package="DGCA"),"/../"), k=k, k_iter_max=k_iter_max))
 
 	tot_len = nrow(inputMat) #total length of input genes
 	split_size = round(tot_len/perBatch) #number of genes per split
