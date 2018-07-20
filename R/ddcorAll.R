@@ -68,7 +68,8 @@ ddcorAll <- function(inputMat, design, compare, inputMatB = NULL, splitSet = NUL
 	}
 
 	if(adjust != "perm" & nPerms > 0 & getDCorAvg == FALSE){
-		warning("If you are not choosing permutation for p-value adjustment or calculating the differential correlation average, then you may be wasting time by generating permutation samples. Consider setting nPerms to 0.")
+		warning("If you are not choosing permutation for p-value adjustment or calculating the differential correlation average, 
+		        then you may be wasting time by generating permutation samples. Consider setting nPerms to 0.")
 	}
 
 	if((corrType=="mutualinformation") & ((nPerms==0)|(adjust!="perm"))){

@@ -40,10 +40,10 @@ ddcorAllParallelWorker <- function(job,data,instance){
 	}
 	if(rownames(instance$matA)==rownames(instance$matB)){
 		ddcor_res = ddcorAll(nPerms = data$nPerms, nPairs = nPairs, inputMat = instance$matA, design = data$design,
-		                   compare = data$compare, cl=cl, corrType = data$corrType,empOnly=TRUE,classify=FALSE)
+		                   compare = data$compare, cl=cl, corrType = data$corrType,empOnly=TRUE,classify=FALSE, k=data$k,k_iter_max=data$k_iter_max)
 	}else{
 		ddcor_res = ddcorAll(nPerms = data$nPerms, nPairs = nPairs, inputMat = instance$matA, inputMatB=instance$matB, design = data$design,
-		                   compare = data$compare, cl=cl, corrType = data$corrType,empOnly=TRUE,classify=FALSE)
+		                   compare = data$compare, cl=cl, corrType = data$corrType,empOnly=TRUE,classify=FALSE, k=data$k,k_iter_max=data$k_iter_max)
 	}
 	#remove NAs caused by ??
 	ddcor_res = ddcor_res[!is.na(ddcor_res$pValDiff),]

@@ -55,7 +55,7 @@ ddcorAllParallel <- function(inputMat, design, compare, outputFile,
 	dCorAvgMethod = "median", signType = "none", oneSidedPVal = FALSE, 
 	perBatch = 10, coresPerJob = 2, timePerJob = 60, memPerJob = 2000, 
 	batchConfig = system.file("config/batchConfig_Zhang.R",package="DGCA"), batchDir = "batchRegistry",
-	batchWarningLevel = 0, batchSeed = 12345, maxRetries = 3, testJob=FALSE){
+	batchWarningLevel = 0, batchSeed = 12345, maxRetries = 3, testJob=FALSE, k=5,k_iter_max=10){
 
 	## REMOVED PARAMETERS 
 	
@@ -92,7 +92,7 @@ ddcorAllParallel <- function(inputMat, design, compare, outputFile,
            				list(input=input_data, compare=compare,design=design,
 	                         n.cores=coresPerJob,nPerms=nPerms,corrType=corrType,
 	                         verbose=verbose, batchWarningLevel=batchWarningLevel, seed=batchSeed,
-	                         libloc = paste0(system.file(package="DGCA"),"/../")))
+	                         libloc = paste0(system.file(package="DGCA"),"/../", k=k, k_iter_max=k_iter_max)))
 
 	tot_len = nrow(inputMat) #total length of input genes
 	split_size = round(tot_len/perBatch) #number of genes per split
