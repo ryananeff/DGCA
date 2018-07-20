@@ -59,6 +59,8 @@ ddMEGENA <- function(ddcor_res, adjusted = TRUE, pval_gene_thresh = 0.05,
 
   g = igraph::graph.data.frame(pfn_res, directed = FALSE)
 
+  write_graph(g,file="megena_graph.txt",format = "edgelist")
+
   MEGENA.output = MEGENA::do.MEGENA(g, mod.pval = modulePVal, hub.pval = hubPVal,
     remove.unsig = TRUE, min.size = minModSize, max.size = maxModSize,
     doPar = parallelize, num.cores = nCores, n.perm = nPerm, save.output = saveOutput)
@@ -67,7 +69,7 @@ ddMEGENA <- function(ddcor_res, adjusted = TRUE, pval_gene_thresh = 0.05,
     MEGENA_modules = MEGENA.output$module.outpu$modules
     MEGENA_modules_df = data.frame(Genes = unlist(MEGENA_modules),
       Modules = rep(names(MEGENA_modules), sapply(MEGENA_modules, length)))
-    megena_output = list(modules = MEGENA_modules_df, full = MEGENA.output)
+    megena_output = list(modules = MEGENA_modules_df, full = MEGENA.output, graph=g)
   }
 
   if(evalCompactness){
@@ -75,9 +77,12 @@ ddMEGENA <- function(ddcor_res, adjusted = TRUE, pval_gene_thresh = 0.05,
       min.size = minModSize, max.size = maxModSize, output.sig = TRUE)
     MEGENA_modules_df = utils::stack(output$modules)
     colnames(MEGENA_modules_df) = c("Genes", "Modules")
-    megena_output = list(modules = MEGENA_modules_df, summary = output, full = MEGENA.output)
+    megena_output = list(modules = MEGENA_modules_df, summary = output, full = MEGENA.output, graph=g)
   }
-
-  return(megena_output)
-
+  if(!saveOutput){
+    return(megena_output)
+  } else {
+    save(megena_output,file="megena_output.Rdata")
+    return(NULL)
+  }
 }
