@@ -154,7 +154,7 @@ ddcorAllParallel <- function(inputMat, design, compare, outputFile,
 	
 	message("Waiting for jobs to complete...")
 	message(Sys.time())
-	job_retries = sapply(batchtools::findSubmitted()$job.id, function(x) {0})
+	job_retries = sapply(batchtools::findJobs()$job.id, function(x) {0})
 	while(length(batchtools::findNotDone()$job.id)>0){
 		batchtools::waitForJobs(timeout=60)
 		err = batchtools::findErrors()$job.id
