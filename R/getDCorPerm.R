@@ -79,7 +79,7 @@ getDCorPerm <- function(inputMat, design, compare, inputMatB = NULL, impute = FA
 			corPermMat2[ , , i] = corMats_res@corMatList[[2]]$corrs
 		}
 	}
-	save(corPermMat1, corPermMat2, file="corPermMats.Rsave")
-	save(zPermMat, file="zPermMat.Rsave")
+	#save(corPermMat1, corPermMat2, file="corPermMats.Rsave")
+	#save(zPermMat, file="zPermMat.Rsave")
 	return(list("zPermMat"=zPermMat,"corPermMat1"=corPermMat1,"corPermMat2"=corPermMat2))
 }
