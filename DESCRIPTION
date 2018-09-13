@@ -18,7 +18,7 @@ Author: Bin Zhang [aut],
     Ryan Neff [edit]
 Maintainer: Ryan Neff <ryan.neff@icahn.mssm.edu>
 Depends: R (>= 3.4.3)
-Imports: WGCNA (>= 1.63) 
+Imports: WGCNA (>= 1.63), 
         matrixStats, 
         methods, 
         qvalue (>= 2.8.1), 
