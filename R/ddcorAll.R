@@ -29,6 +29,8 @@
 #' @param oneSidedPVal If the dCorAvgType test is total_average, this option specifies whether a one-sided p-value should be reported, as opposed to a two-sided p-value. That is, if the average difference of z-scores is greater than zero, test whether the permutation average difference of z-scores are less than that average to get the p-value, and vice versa for the case that the average difference of z-scores is less than 0. Otherwise, test whether the absolute value of the average difference in z-scores is greater than the absolute values of the permutation average difference in z-scores. Default = FALSE.
 #' @param cl A parallel cluster object created by parallel::makeCluster(). If FALSE, defaults to single-core implementation. Default = FALSE.
 #' @param empOnly Whether or not we don't want to calculate qvalues for the empirical pvalues. Default = FALSE.
+#' @param k When running in MI mode, the number of intervals to discretize the data into before calculating mutual information. Default = 5.
+#' @param k_iter_max When running in MI mode, the number of iterations to determine the k-clusters for discretization before calculating mutual information. Default = 10. 
 #' @param ... Additional plotting arguments if heatmapPlot = TRUE.
 #' @return Typically, the returned object is a data frame of the table of differential correlations between conditions. In the case that dCorAvg is calculated, the returned object is instead a list containing that table as well as the object summarizing the difference in average correlation for the specified portion of the data set.
 #' @examples
@@ -131,8 +133,6 @@ ddcorAll <- function(inputMat, design, compare, inputMatB = NULL, splitSet = NUL
 		compare = compare, inputMatB = inputMatB,
 		impute = impute, corrType = corrType, corr_cutoff = corr_cutoff,
 		signType = signType, cl=cl, k=k,k_iter_max=k_iter_max)
-
-	ddcor_res_at_step <<- ddcor_res
 
 	if((nPerms > 0)){
 		res = getDCorPerm(inputMat = inputMat, design = design,

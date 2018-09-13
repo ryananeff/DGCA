@@ -32,6 +32,8 @@
 #' @param batchSeed Random seed to use on all batch jobs. Default = 12345.
 #' @param maxRetries Number of times to re-submit jobs that failed. This is helpful for jobs that failed due to transient errors on an HPC. Default = 3
 #' @param testJob Test one job before running it? Default = FALSE
+#' @param k When running in MI mode, the number of intervals to discretize the data into before calculating mutual information. Default = 5.
+#' @param k_iter_max When running in MI mode, the number of iterations to determine the k-clusters for discretization before calculating mutual information. Default = 10. 
 #' @return Returns whether all jobs successfully executed or not. Output is in the output file.
 #' @export
 
@@ -89,7 +91,7 @@ ddcorAllParallel <- function(inputMat, design, compare, outputFile,
 
 	batchtools::addAlgorithm(name="dgca",fun=ddcorAllParallelWorker,reg=reg)
 	batchtools::addProblem(name="input_data",fun=matrix_part,reg=reg,data = 
-           				list(input=input_data, compare=compare,design=design,
+           				list(input=inputMat, compare=compare,design=design,
 	                         n.cores=coresPerJob,nPerms=nPerms,corrType=corrType,
 	                         verbose=verbose, batchWarningLevel=batchWarningLevel, seed=batchSeed,
 	                         libloc = paste0(system.file(package="DGCA"),"/../"), k=k, k_iter_max=k_iter_max))

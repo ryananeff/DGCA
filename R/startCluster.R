@@ -6,7 +6,6 @@
 #' n.cores = 8
 #' cl = startCluster(n.cores)
 #' @export 
-
 startCluster <- function(n.cores=2){
 	if(n.cores<2){
 		message("Running in single-threaded mode (n.cores < 2).")

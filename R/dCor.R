@@ -5,6 +5,8 @@
 #' @param n1 Numeric vector of the number of samples used in the correlation calculations in condition 1.
 #' @param n2 Numeric vector of the number of samples used in the correlation calculations in condition 2.
 #' @param corrType The correlation type of the analysis, limited to "pearson" or "spearman".
+#' @param pval1 When running in mutual information mode, do you have empirical p-values for matrix 1? If so, use them to recalculate the z-score difference. Default = "none" 
+#' @param pval2 When running in mutual information mode, do you have empirical p-values for matrix 2? If so, use them to recalculate the z-score difference. Default = "none" 
 #' @references Tests For Rank Correlation Coefficients, I. http://biomet.oxfordjournals.org/content/44/3-4/470.full.pdf+html
 #' @return Numeric vector with scaled difference in z-scores of correlations between the two conditions.
 #' @examples

@@ -10,6 +10,8 @@
 #' @param corr_cutoff Cutoff specifying correlation values beyond which will be truncated to this value, to reduce the effect of outlier correlation values when using small sample sizes. Default = 0.99
 #' @param signType Coerce all correlation coefficients to be either positive (via "positive"), negative (via "negative"), or none (via "none"). This could be used if you think that going from a positive to a negative correlation is unlikely to occur biologically and is more likely to be due to noise, and you want to ignore these effects. Note that this does NOT affect the reported underlying correlation values, but does affect the z-score difference of correlation calculation. Default = "none", for no coercing.
 #' @param cl A parallel cluster object created by parallel::makeCluster(). If FALSE, defaults to single-core implementation.
+#' @param k When running in MI mode, the number of intervals to discretize the data into before calculating mutual information. Default = 5.
+#' @param k_iter_max When running in MI mode, the number of iterations to determine the k-clusters for discretization before calculating mutual information. Default = 10. 
 #' @return An array of permuted differences in z-scores calculated between conditions, with the third dimension corresponding to the number of permutations performed.
 #' @export
 getDCorPerm <- function(inputMat, design, compare, inputMatB = NULL, impute = FALSE,
@@ -53,7 +55,6 @@ getDCorPerm <- function(inputMat, design, compare, inputMatB = NULL, impute = FA
 		                         inputMatB=inputMatB,impute=impute,corrType=corrType,
 		                         corr_cutoff=corr_cutoff,signType=signType,clus=FALSE,
 		                         secondMat=secondMat, k=k,k_iter_max=k_iter_max)
-		res_out <<- res
 		for (i in 1:nPerms){
 			zPermMat[ , , i] = res[[i]]$zscores #zPermMatList
 			corPermMat1[ , , i] = res[[i]]$corrs@corMatList[[1]]$corrs #corPermMatList

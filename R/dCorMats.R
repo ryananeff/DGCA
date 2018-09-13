@@ -8,6 +8,8 @@
 #' @param corr_cutoff Cutoff specifying correlation values beyond which will be truncated to this value, to reduce the effect of outlier correlation values when using small sample sizes. Note that this does NOT affect the reported underlying correlation values, but does affect the z-score difference of correlation calculation.
 #' @param secondMat Logical indicator of whether there is a second matrix in the comparison or not. If no, then computations will only be performed the upper triangle of the input matrices.
 #' @param signType Coerce all correlation coefficients to be either positive (via "positive"), negative (via "negative"), or none (via "none"). This could be used if you think that going from a positive to a negative correlation is unlikely to occur biologically and is more likely to be due to noise, and you want to ignore these effects. Note that this does NOT affect the reported underlying correlation values, but does affect the z-score difference of correlation calculation. Default = "none", for no coercing.
+#' @param pvalA When running in mutual information mode, do you have empirical p-values for matrix A? If so, use them to recalculate the z-score difference. Default = "none" 
+#' @param pvalA When running in mutual information mode, do you have empirical p-values for matrix B? If so, use them to recalculate the z-score difference. Default = "none"  
 #' @return A list of two differential correlation matrices: one for the difference in z-scores and one for the corresponding p-values.
 #' @export
 dCorMats <- function(matA, nmatA, matB, nmatB,

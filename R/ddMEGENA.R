@@ -59,7 +59,7 @@ ddMEGENA <- function(ddcor_res, adjusted = TRUE, pval_gene_thresh = 0.05,
 
   g = igraph::graph.data.frame(pfn_res, directed = FALSE)
 
-  write_graph(g,file="megena_graph.txt",format = "edgelist")
+  igraph::write_graph(g,file="megena_graph.txt",format = "edgelist")
 
   MEGENA.output = MEGENA::do.MEGENA(g, mod.pval = modulePVal, hub.pval = hubPVal,
     remove.unsig = TRUE, min.size = minModSize, max.size = maxModSize,

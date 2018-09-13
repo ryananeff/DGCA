@@ -7,6 +7,8 @@
 #' @param use The "use" method for performing the correlation calculation. See ?cor for more information. Default = "pairwise.complete.obs" (which is one of the speed-optimized versions; see ?WGCNA::cor for more).
 #' @param k If method="mutualinformation", the number of nearest neighbors to consider to estimate the mutual information. Must be less than the number of columns of mat.
 #' @param noise If method="mutualinformation, the magnitude of the random noise added to break ties.
+#' @param k When running in MI mode, the number of intervals to discretize the data into before calculating mutual information. Default = 5.
+#' @param k_iter_max When running in MI mode, the number of iterations to determine the k-clusters for discretization before calculating mutual information. Default = 10. 
 #' @return A correlation matrix.
 #' data(darmanis); darmanis_subset = darmanis[1:30, ]
 #' matcor_res = matCorr(matA = darmanis_subset, corrType = "pearson")
@@ -23,9 +25,7 @@ matCorr <- function(matA, corrType, use = "pairwise.complete.obs", matB = NULL, 
 			corrs = cor(matA,use=use,method="spearman")
 		}
 		if(corrType %in% "mutualinformation"){
-			#EXPERIMENTAL
-			library(arules,lib.loc="~/.RlibDGCA")
-			matA_discrete = discretizeDF(data.frame(matA), 
+			matA_discrete = arules::discretizeDF(data.frame(matA), 
 			                                     default=list("method"="cluster", 
 			                                                  "centers"=k,"iter.max"=k_iter_max))
 			corrs = infotheo::mutinformation(matA_discrete)

@@ -6,6 +6,8 @@
 #' @param design A standard model.matrix created design matrix. Rows correspond to samples and colnames refer to the names of the conditions that you are interested in analyzing. Only 0's or 1's are allowed in the design matrix. Please see vignettes for more information.
 #' @param corrType The correlation type of the analysis, limited to "pearson" or "spearman". Default = "pearson".
 #' @param cl A parallel cluster object created by parallel::makeCluster(). If FALSE, defaults to single-core implementation. Default = FALSE.
+#' @param k When running in MI mode, the number of intervals to discretize the data into before calculating mutual information. Default = 5.
+#' @param k_iter_max When running in MI mode, the number of iterations to determine the k-clusters for discretization before calculating mutual information. Default = 10. 
 #' @return A corMats S4 class object, containing a list of matrices from each group, the design matrix, and a character vector of options.
 #' @examples
 #' data(darmanis); data(design_mat); darmanis_subset = darmanis[1:30, ]
