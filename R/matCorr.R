@@ -16,7 +16,7 @@
 
 matCorr <- function(matA, corrType, use = "pairwise.complete.obs", matB = NULL, secondMat = FALSE,
                     k=5,k_iter_max=10){
-
+    library("arules",lib.loc="~/.RlibDGCA")
 	if(!secondMat){
 		if(corrType %in% "pearson"){
 			corrs = cor(matA,use=use,method="pearson")
@@ -25,7 +25,7 @@ matCorr <- function(matA, corrType, use = "pairwise.complete.obs", matB = NULL, 
 			corrs = cor(matA,use=use,method="spearman")
 		}
 		if(corrType %in% "mutualinformation"){
-			matA_discrete = adiscretizeDF(data.frame(matA), 
+			matA_discrete = arules::discretizeDF(data.frame(matA), 
 			                                     default=list("method"="cluster", 
 			                                                  "centers"=k,"iter.max"=k_iter_max))
 			corrs = infotheo::mutinformation(matA_discrete)
@@ -56,8 +56,8 @@ matCorr <- function(matA, corrType, use = "pairwise.complete.obs", matB = NULL, 
 
 			for(col1 in 1:length(colnames(df1))){
 			  for(col2 in col1:length(colnames(df2))){
-			    x_dis = adiscretize(x=as.numeric(df1[,col1]), method="cluster", centers=k,iter.max=k_iter_max)
-			    y_dis = adiscretize(x=as.numeric(df2[,col2]), method="cluster", centers=k,iter.max=k_iter_max)
+			    x_dis = arules::discretize(x=as.numeric(df1[,col1]), method="cluster", centers=k,iter.max=k_iter_max)
+			    y_dis = arules::discretize(x=as.numeric(df2[,col2]), method="cluster", centers=k,iter.max=k_iter_max)
 			    mi_df_2mat[col1,col2] = infotheo::mutinformation(x_dis,y_dis)
 			    mi_df_2mat[col2,col1] = mi_df_2mat[col1,col2]
 			  }
