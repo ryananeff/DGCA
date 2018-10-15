@@ -25,7 +25,7 @@ matCorr <- function(matA, corrType, use = "pairwise.complete.obs", matB = NULL, 
 			corrs = cor(matA,use=use,method="spearman")
 		}
 		if(corrType %in% "mutualinformation"){
-			matA_discrete = arules::discretizeDF(data.frame(matA), 
+			matA_discrete = discretizeDF(data.frame(matA), 
 			                                     default=list("method"="cluster", 
 			                                                  "centers"=k,"iter.max"=k_iter_max))
 			corrs = infotheo::mutinformation(matA_discrete)
@@ -47,7 +47,6 @@ matCorr <- function(matA, corrType, use = "pairwise.complete.obs", matB = NULL, 
 		}
 		if(corrType %in% "mutualinformation"){
 			#EXPERIMENTAL
-			library(arules,lib.loc="~/.RlibDGCA")
 			df1 = matA
 			df2 = matB
 
