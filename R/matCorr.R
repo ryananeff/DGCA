@@ -16,7 +16,7 @@
 
 matCorr <- function(matA, corrType, use = "pairwise.complete.obs", matB = NULL, secondMat = FALSE,
                     k=5,k_iter_max=10){
-    library("arules",lib.loc="~/.RlibDGCA")
+    library("arules")#,lib.loc="~/.RlibDGCA")
 	if(!secondMat){
 		if(corrType %in% "pearson"){
 			corrs = cor(matA,use=use,method="pearson")
@@ -25,10 +25,9 @@ matCorr <- function(matA, corrType, use = "pairwise.complete.obs", matB = NULL, 
 
 			#speed hack 10/23/18
 			colnames_matA = colnames(matA)
-			matA = t(apply(matA,1,function(x) order(x)))
+			matA = t(apply(matA,1,function(x) rank(x,ties="random")))
 			colnames(matA) = colnames_matA
 
-			#this is equivalent to the Spearman corr
 			corrs = cor(matA,use=use,method="pearson")
 		}
 		if(corrType %in% "mutualinformation"){
@@ -50,17 +49,16 @@ matCorr <- function(matA, corrType, use = "pairwise.complete.obs", matB = NULL, 
 			corrs = cor(matA,matB,use=use,method="pearson")
 		}
 		if(corrType %in% "spearman"){
-			
+
 			#speed hack 10/23/18
 			colnames_matA = colnames(matA)
-			matA = t(apply(matA,1,function(x) order(x)))
+			matA = t(apply(matA,1,function(x) rank(x,ties="random")))
 			colnames(matA) = colnames_matA
 			colnames_matB = colnames(matB)
-			matB = t(apply(matB,1,function(x) order(x)))
+			matB = t(apply(matB,1,function(x) rank(x,ties="random")))
 			colnames(matB) = colnames_matB
 
-			#this is equivalent to the Spearman corr
-			corrs = cor(matA,matB,use=use,method="pearson")
+		  corrs = cor(matA,matB,use=use,method="pearson")
 		}
 		if(corrType %in% "mutualinformation"){
 			#EXPERIMENTAL
