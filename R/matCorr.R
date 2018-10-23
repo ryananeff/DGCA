@@ -22,7 +22,14 @@ matCorr <- function(matA, corrType, use = "pairwise.complete.obs", matB = NULL, 
 			corrs = cor(matA,use=use,method="pearson")
 		}
 		if(corrType %in% "spearman"){
-			corrs = cor(matA,use=use,method="spearman")
+
+			#speed hack 10/23/18
+			colnames_matA = colnames(matA)
+			matA = t(apply(matA,1,function(x) order(x)))
+			colnames(matA) = colnames_matA
+
+			#this is equivalent to the Spearman corr
+			corrs = cor(matA,use=use,method="pearson")
 		}
 		if(corrType %in% "mutualinformation"){
 			matA_discrete = arules::discretizeDF(data.frame(matA), 
@@ -43,7 +50,17 @@ matCorr <- function(matA, corrType, use = "pairwise.complete.obs", matB = NULL, 
 			corrs = cor(matA,matB,use=use,method="pearson")
 		}
 		if(corrType %in% "spearman"){
-		  corrs = cor(matA,matB,use=use,method="spearman")
+			
+			#speed hack 10/23/18
+			colnames_matA = colnames(matA)
+			matA = t(apply(matA,1,function(x) order(x)))
+			colnames(matA) = colnames_matA
+			colnames_matB = colnames(matB)
+			matB = t(apply(matB,1,function(x) order(x)))
+			colnames(matB) = colnames_matB
+
+			#this is equivalent to the Spearman corr
+			corrs = cor(matA,matB,use=use,method="pearson")
 		}
 		if(corrType %in% "mutualinformation"){
 			#EXPERIMENTAL
