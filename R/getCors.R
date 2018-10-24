@@ -100,7 +100,7 @@ getCors <- function(inputMat, design, inputMatB = NULL, impute = FALSE, corrType
 			}
 		if(!identical(cl,FALSE)){
 			parallel::clusterExport(cl=cl,c("matCorr","matNSamp","matCorSig",
-			                                "discretize","discretizeDF","mutinformation"))
+			                                "discretize","discretizeDF"))
 			##TODO: calculate the correlation in chunks and write out to intermediate file
 			groupMatLists = parallel::parLapply(cl=cl,groupList,calcCorrs,
 			                          corrType=corrType,impute=impute, k=k,k_iter_max=k_iter_max)
@@ -140,7 +140,7 @@ getCors <- function(inputMat, design, inputMatB = NULL, impute = FALSE, corrType
 		}
 		if(!identical(cl,FALSE)){
 			parallel::clusterExport(cl=cl,c("matCorr","matNSamp","matCorSig",
-			                                "discretize","discretizeDF","mutinformation"))
+			                                "discretize","discretizeDF"))
 			##replacement for python zip() function to allow submission as parallel job
 			zipLists = list()
 			for (i in 1:length(designRes[[1]])){
