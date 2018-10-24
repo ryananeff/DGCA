@@ -13,7 +13,7 @@
 #' data(darmanis); data(design_mat); darmanis_subset = darmanis[1:30, ]
 #' cors_res = getCors(inputMat = darmanis_subset, design = design_mat)
 #' @export
-getCors <- function(inputMat, design, inputMatB = NULL, impute = FALSE, corrType = "pearson", cl=FALSE, k=5,k_iter_max=10,lib.loc=NULL)){
+getCors <- function(inputMat, design, inputMatB = NULL, impute = FALSE, corrType = "pearson", cl=FALSE, k=5,k_iter_max=10,lib.loc=NULL){
 
 	##############################
 	#set SAF to FALSE while restoring to default when the function is finished
