@@ -19,8 +19,6 @@ ddcorAllParallelWorker <- function(job,data,instance){
 	# verbose
 	# seed
 	
-	library("DGCA",lib.loc=data$libloc)
-	
 	options(warn=data$batchWarningLevel)
 
 	cl<-parallel::makeCluster(data$n.cores)

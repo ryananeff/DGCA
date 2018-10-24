@@ -16,7 +16,6 @@
 
 matCorr <- function(matA, corrType, use = "pairwise.complete.obs", matB = NULL, secondMat = FALSE,
                     k=5,k_iter_max=10){
-    library("arules")#,lib.loc="~/.RlibDGCA")
 	if(!secondMat){
 		if(corrType %in% "pearson"){
 			corrs = cor(matA,use=use,method="pearson")
