@@ -17,7 +17,7 @@
 matCorr <- function(matA, corrType, use = "pairwise.complete.obs", matB = NULL, secondMat = FALSE,
                     k=5,k_iter_max=10,lib.loc=NULL){
 	
-	if (lib.loc!=NULL){ #why
+	if (is.null(lib.loc)==FALSE){ #why
 		.libPaths(lib.loc)
 	}
 	
