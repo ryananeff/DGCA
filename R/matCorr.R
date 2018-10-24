@@ -23,7 +23,6 @@ matCorr <- function(matA, corrType, use = "pairwise.complete.obs", matB = NULL, 
 		library("arules",lib.loc=lib.loc)
 		print("loaded special libraries")
 	}
-	library("arules",lib.loc="~/.RlibDGCA")
 	
 	if(!secondMat){
 		if(corrType %in% "pearson"){
