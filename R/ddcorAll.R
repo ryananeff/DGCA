@@ -46,7 +46,7 @@ ddcorAll <- function(inputMat, design, compare, inputMatB = NULL, splitSet = NUL
 	dCorAvgMethod = "median", oneSidedPVal = FALSE, customize_heatmap = FALSE,
 	heatmapClassic = FALSE, corPower = 2, cl=FALSE, empOnly=FALSE,k=5,k_iter_max=10,lib.loc=NULL,...){
 
-	if (lib.loc!=NULL){ #why
+	if (is.null(lib.loc)==FALSE){ #why
 		.libPaths(lib.loc)
 	}
 
