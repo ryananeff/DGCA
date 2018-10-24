@@ -13,7 +13,7 @@
 #' data(darmanis); data(design_mat); darmanis_subset = darmanis[1:30, ]
 #' cors_res = getCors(inputMat = darmanis_subset, design = design_mat)
 #' @export
-getCors <- function(inputMat, design, inputMatB = NULL, impute = FALSE, corrType = "pearson", cl=FALSE, k=5,k_iter_max=10){
+getCors <- function(inputMat, design, inputMatB = NULL, impute = FALSE, corrType = "pearson", cl=FALSE, k=5,k_iter_max=10,lib.loc=NULL)){
 
 	##############################
 	#set SAF to FALSE while restoring to default when the function is finished
@@ -86,7 +86,7 @@ getCors <- function(inputMat, design, inputMatB = NULL, impute = FALSE, corrType
 
 		###################################
 		#calculate the correlation-related matrices for each of the sub-matrices
-		calcCorrs <- function(group,corrType,impute, k=5,k_iter_max=10){
+		calcCorrs <- function(group,corrType,impute, k=5,k_iter_max=10,lib.loc=lib.loc){
 				#for extensibility, the first two fxns below can accept multiple matrices
 				corr = matCorr(t(group), corrType = corrType, k=k,k_iter_max=k_iter_max)
 				nsamp = matNSamp(t(group), impute = impute)
@@ -102,11 +102,11 @@ getCors <- function(inputMat, design, inputMatB = NULL, impute = FALSE, corrType
 			parallel::clusterExport(cl=cl,c("matCorr","matNSamp","matCorSig"))
 			##TODO: calculate the correlation in chunks and write out to intermediate file
 			groupMatLists = parallel::parLapply(cl=cl,groupList,calcCorrs,
-			                          corrType=corrType,impute=impute, k=k,k_iter_max=k_iter_max)
+			                          corrType=corrType,impute=impute, k=k,k_iter_max=k_iter_max,lib.loc=lib.loc)
 			names(groupMatLists) = designRes[[2]]
 		}else{
 			for(i in 1:length(groupList)){
-				groupMatLists[[i]] = calcCorrs(groupList[[i]],corrType,impute)
+				groupMatLists[[i]] = calcCorrs(groupList[[i]],corrType,impute,k=k,k_iter_max=k_iter_max,lib.loc=lib.loc)
 			}
 		}
 
@@ -127,7 +127,7 @@ getCors <- function(inputMat, design, inputMatB = NULL, impute = FALSE, corrType
 
 		###################################
 		#calculate the correlation-related matrices for each of the sub-matrices
-		calcCorrs2samp <- function(mats,corrType,impute, k=5,k_iter_max=10){
+		calcCorrs2samp <- function(mats,corrType,impute, k=5,k_iter_max=10,lib.loc=lib.loc){
 			matA = mats[[1]] # get the matrices back
 			matB = mats[[2]]
 			#for extensibility, the first two fxns below can accept multiple matrices
@@ -145,7 +145,7 @@ getCors <- function(inputMat, design, inputMatB = NULL, impute = FALSE, corrType
 				zipLists[[i]]=list(designRes[[1]][[i]],designRes[[2]][[i]]) #this gets us into the right format while using the same memory as non-parallel case
 			}
 			groupMatLists = parallel::parLapply(cl=cl,zipLists,calcCorrs2samp,
-			                          corrType=corrType,impute=impute, k=k,k_iter_max=k_iter_max)
+			                          corrType=corrType,impute=impute, k=k,k_iter_max=k_iter_max,lib.loc=lib.loc)
 			names(groupMatLists) = designRes[[3]]
 		}else{
 			groupListA = designRes[[1]]
@@ -155,7 +155,7 @@ getCors <- function(inputMat, design, inputMatB = NULL, impute = FALSE, corrType
 
 				#for extensibility, the first two fxns below can accept multiple matrices
 				corr = matCorr(matA = t(groupListA[[i]]), corrType = corrType,
-					matB = t(groupListB[[i]]), secondMat = TRUE)
+					matB = t(groupListB[[i]]), secondMat = TRUE,k=k,k_iter_max=k_iter_max,lib.loc=lib.loc)
 
 				nsamp = matNSamp(matA = t(groupListA[[i]]), impute = impute,
 					matB = t(groupListB[[i]]), secondMat = TRUE)
