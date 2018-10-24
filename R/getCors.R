@@ -88,7 +88,7 @@ getCors <- function(inputMat, design, inputMatB = NULL, impute = FALSE, corrType
 		#calculate the correlation-related matrices for each of the sub-matrices
 		calcCorrs <- function(group,corrType,impute, k=5,k_iter_max=10,lib.loc=lib.loc){
 				#for extensibility, the first two fxns below can accept multiple matrices
-				corr = matCorr(t(group), corrType = corrType, k=k,k_iter_max=k_iter_max)
+				corr = matCorr(t(group), corrType = corrType, k=k,k_iter_max=k_iter_max,lib.loc=lib.loc)
 				nsamp = matNSamp(t(group), impute = impute)
 				if(corrType!="mutualinformation"){
 					pval = matCorSig(corr, nsamp)
@@ -131,7 +131,7 @@ getCors <- function(inputMat, design, inputMatB = NULL, impute = FALSE, corrType
 			matA = mats[[1]] # get the matrices back
 			matB = mats[[2]]
 			#for extensibility, the first two fxns below can accept multiple matrices
-			corr = matCorr(matA=t(matA),matB=t(matB),corrType=corrType,secondMat=TRUE, k=k,k_iter_max=k_iter_max)
+			corr = matCorr(matA=t(matA),matB=t(matB),corrType=corrType,secondMat=TRUE, k=k,k_iter_max=k_iter_max,lib.loc=lib.loc)
 			nsamp = matNSamp(matA = t(matA),matB=t(matB),impute=impute,secondMat=TRUE)
 			pval = matCorSig(corr,nsamp,secondMat=TRUE)
 
