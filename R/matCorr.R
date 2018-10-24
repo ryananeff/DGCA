@@ -15,7 +15,11 @@
 #' @export
 
 matCorr <- function(matA, corrType, use = "pairwise.complete.obs", matB = NULL, secondMat = FALSE,
-                    k=5,k_iter_max=10){
+                    k=5,k_iter_max=10,lib.loc=NULL){
+	
+	if (lib.loc!=NULL){ #why
+		.libPaths(lib.loc)
+	}
 	
 	if(!secondMat){
 		if(corrType %in% "pearson"){

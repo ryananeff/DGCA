@@ -44,7 +44,11 @@ ddcorAll <- function(inputMat, design, compare, inputMatB = NULL, splitSet = NUL
 	corSigThresh = 0.05, heatmapPlot = FALSE, color_palette = NULL, verbose = FALSE, plotFdr = FALSE,
 	corr_cutoff = 0.99, signType = "none", getDCorAvg = FALSE, dCorAvgType = "gene_average",
 	dCorAvgMethod = "median", oneSidedPVal = FALSE, customize_heatmap = FALSE,
-	heatmapClassic = FALSE, corPower = 2, cl=FALSE, empOnly=FALSE,k=5,k_iter_max=10,...){
+	heatmapClassic = FALSE, corPower = 2, cl=FALSE, empOnly=FALSE,k=5,k_iter_max=10,lib.loc=NULL,...){
+
+	if (lib.loc!=NULL){ #why
+		.libPaths(lib.loc)
+	}
 
 	################################
 	# check inputs
@@ -132,13 +136,13 @@ ddcorAll <- function(inputMat, design, compare, inputMatB = NULL, splitSet = NUL
 	ddcor_res = getDCors(inputMat = inputMat, design = design,
 		compare = compare, inputMatB = inputMatB,
 		impute = impute, corrType = corrType, corr_cutoff = corr_cutoff,
-		signType = signType, cl=cl, k=k,k_iter_max=k_iter_max)
+		signType = signType, cl=cl, k=k,k_iter_max=k_iter_max,lib.loc=lib.loc)
 
 	if((nPerms > 0)){
 		res = getDCorPerm(inputMat = inputMat, design = design,
 			compare = compare, inputMatB = inputMatB,
 			impute = impute, corrType = corrType, nPerms = nPerms,
-			corr_cutoff = corr_cutoff, signType = signType, cl=cl, k=k,k_iter_max=k_iter_max)
+			corr_cutoff = corr_cutoff, signType = signType, cl=cl, k=k,k_iter_max=k_iter_max,lib.loc=lib.loc)
 		ddcor_perm = res$zPermMat
 	}
 
