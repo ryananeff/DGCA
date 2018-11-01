@@ -26,7 +26,12 @@ matCorr <- function(matA, corrType, use = "pairwise.complete.obs", matB = NULL, 
 	
 	if(!secondMat){
 		if(corrType %in% "pearson"){
-			corrs = WGCNA::cor(matA, use = use, method="pearson")
+			corrs = tryCatch({
+                WGCNA::cor(matA, use = use, method="pearson")
+            }, error = function(e){
+                message("Large matrix detected, running slower 64-bit cor()")
+                cor(matA, use=use, method="pearson")
+            })
 		}
 		if(corrType %in% "spearman"){
 
@@ -35,7 +40,13 @@ matCorr <- function(matA, corrType, use = "pairwise.complete.obs", matB = NULL, 
 			matA = t(apply(matA,1,function(x) rank(x,ties="random")))
 			colnames(matA) = colnames_matA
 
-			corrs = WGCNA::cor(matA, use = use, method="pearson")
+			corrs = tryCatch({
+                WGCNA::cor(matA, use = use, method="pearson")
+            }, error = function(e){
+                message("Large matrix detected, running slower 64-bit cor()")
+                cor(matA, use=use, method="pearson")
+            })
+
 		}
 		if(corrType %in% "mutualinformation"){
 			matA_discrete = discretizeDF(data.frame(matA), 
@@ -53,7 +64,13 @@ matCorr <- function(matA, corrType, use = "pairwise.complete.obs", matB = NULL, 
 
 	if(secondMat){
 		if(corrType %in% "pearson"){
-			corrs = WGCNA::cor(matA, use = use, method="pearson")
+           corrs = tryCatch({
+                WGCNA::cor(matA,matB,use=use,method="pearson")
+            }, error = function(e){
+                message("Large matrix detected, running slower 64-bit cor()")
+                cor(matA,matB,use=use,method="pearson")
+            })
+
 		}
 		if(corrType %in% "spearman"){
 
@@ -64,8 +81,15 @@ matCorr <- function(matA, corrType, use = "pairwise.complete.obs", matB = NULL, 
 			colnames_matB = colnames(matB)
 			matB = t(apply(matB,1,function(x) rank(x,ties="random")))
 			colnames(matB) = colnames_matB
+            
+            corrs = tryCatch({
+                WGCNA::cor(matA,matB,use=use,method="pearson")
+            }, error = function(e){
+                message("Large matrix detected, running slower 64-bit cor()")
+                cor(matA,matB,use=use,method="pearson")
+            })
 
-		  corrs = WGCNA::cor(matA,matB,use=use,method="pearson")
+
 		}
 		if(corrType %in% "mutualinformation"){
 			#EXPERIMENTAL
