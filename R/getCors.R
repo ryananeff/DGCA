@@ -77,7 +77,15 @@ getCors <- function(inputMat, design, inputMatB = NULL, impute = FALSE, corrType
 
 		####################################
 		#use the design matrix to split the input matrix a list of sub-matrices
-		designRes = getGroupsFromDesign(inputMat, design)
+		if (corrType=="mutualinformation"){
+			message("Discretizing matrix.")
+			discret_mat = arules::discretizeDF(data.frame(matA), 
+			                                     default=list("method"="interval", 
+			                                                  "breaks"=k))
+			designRes = getGroupsFromDesign(inputMat, design)
+		} else {
+			designRes = getGroupsFromDesign(inputMat, design)
+		}
 		groupList = designRes[[1]]
 
 		#create list of lists to store the results
@@ -100,7 +108,6 @@ getCors <- function(inputMat, design, inputMatB = NULL, impute = FALSE, corrType
 			}
 		if(!identical(cl,FALSE)){
 			parallel::clusterExport(cl=cl,c("matCorr","matNSamp","matCorSig"))
-			##TODO: calculate the correlation in chunks and write out to intermediate file
 			groupMatLists = parallel::parLapply(cl=cl,groupList,calcCorrs,
 			                          corrType=corrType,impute=impute, k=k,k_iter_max=k_iter_max,lib.loc=lib.loc)
 			names(groupMatLists) = designRes[[2]]
@@ -118,8 +125,21 @@ getCors <- function(inputMat, design, inputMatB = NULL, impute = FALSE, corrType
 
 		####################################
 		#use the design matrix to split the input matrix a list of sub-matrices
-		designRes = getGroupsFromDesign(inputMat = inputMat, design = design,
-			inputMatB = inputMatB, secondMat = TRUE)
+		if (corrType=="mutualinformation"){
+			message("Discretizing matrix A and B.")
+			discret_mat = arules::discretizeDF(data.frame(inputMat), 
+			                                     default=list("method"="interval", 
+			                                                  "breaks"=k))
+			discret_matB = arules::discretizeDF(data.frame(inputMatB), 
+			                                     default=list("method"="interval", 
+			                                                  "breaks"=k))
+			designRes = getGroupsFromDesign(inputMat = discret_mat, design = design,
+			inputMatB = discret_matB, secondMat = TRUE)
+
+		} else {
+			designRes = getGroupsFromDesign(inputMat = inputMat, design = design,
+				inputMatB = inputMatB, secondMat = TRUE)
+		}
 
 		#create list of lists to store the results
 		groupMatLists = as.list(rep(NA, length(designRes[[1]])))
