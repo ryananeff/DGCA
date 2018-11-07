@@ -50,7 +50,7 @@ matCorr <- function(matA, corrType, use = "pairwise.complete.obs", matB = NULL, 
 		}
 		if(corrType %in% "mutualinformation"){
 			##EXPERIMENTAL - assume already discrete
-			corrs = infotheo::mutinformation(matA) ##assume it is already a discrete matrix
+			corrs = infotheo::mutinformation(data.frame(matA, stringsAsFactors=TRUE)) ##assume it is already a discrete matrix
 			
 		}
 		if(corrType %in% "bicor"){
@@ -91,8 +91,8 @@ matCorr <- function(matA, corrType, use = "pairwise.complete.obs", matB = NULL, 
 		}
 		if(corrType %in% "mutualinformation"){
 			#EXPERIMENTAL - assume already discrete
-			df1 = matA
-			df2 = matB
+			df1 = data.frame(matA, stringsAsFactors=TRUE) ## WAO, there is a use for this after all...
+			df2 = data.frame(matB, stringsAsFactors=TRUE) ## WAOWAO
 
 			mi_df_2mat = matrix(data=NA,nrow=ncol(df1),ncol=ncol(df2))
 			rownames(mi_df_2mat) = colnames(df1)

@@ -79,10 +79,12 @@ getCors <- function(inputMat, design, inputMatB = NULL, impute = FALSE, corrType
 		#use the design matrix to split the input matrix a list of sub-matrices
 		if (corrType=="mutualinformation"){
 			message("Discretizing matrix.")
-			discret_mat = arules::discretizeDF(data.frame(matA), 
+			discret_mat = arules::discretizeDF(data.frame(t(inputMat)), 
 			                                     default=list("method"="interval", 
 			                                                  "breaks"=k))
-			designRes = getGroupsFromDesign(inputMat, design)
+			discret_mat = data.frame(t(discret_mat))
+			designRes = getGroupsFromDesign(discret_mat, design)
+			message("Applied uniform discretization to all groups.")
 		} else {
 			designRes = getGroupsFromDesign(inputMat, design)
 		}
@@ -127,15 +129,17 @@ getCors <- function(inputMat, design, inputMatB = NULL, impute = FALSE, corrType
 		#use the design matrix to split the input matrix a list of sub-matrices
 		if (corrType=="mutualinformation"){
 			message("Discretizing matrix A and B.")
-			discret_mat = arules::discretizeDF(data.frame(inputMat), 
+			discret_mat = arules::discretizeDF(data.frame(t(inputMat)), 
 			                                     default=list("method"="interval", 
 			                                                  "breaks"=k))
-			discret_matB = arules::discretizeDF(data.frame(inputMatB), 
+			discret_matB = arules::discretizeDF(data.frame(t(inputMatB)), 
 			                                     default=list("method"="interval", 
 			                                                  "breaks"=k))
+			discret_mat = data.frame(t(discret_mat))
+			discret_matB = data.frame(t(discret_matB))
 			designRes = getGroupsFromDesign(inputMat = discret_mat, design = design,
 			inputMatB = discret_matB, secondMat = TRUE)
-
+			message("Applied uniform discretization to all groups.")
 		} else {
 			designRes = getGroupsFromDesign(inputMat = inputMat, design = design,
 				inputMatB = inputMatB, secondMat = TRUE)
