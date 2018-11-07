@@ -15,6 +15,13 @@
 #' @export
 getCors <- function(inputMat, design, inputMatB = NULL, impute = FALSE, corrType = "pearson", cl=FALSE, k=5,k_iter_max=10,lib.loc=NULL){
 
+	if (is.null(lib.loc)==FALSE){ #why
+		.libPaths(lib.loc)
+		library("DGCA",lib.loc=lib.loc)
+		library("arules",lib.loc=lib.loc)
+		print("loaded special libraries")
+	}
+	
 	##############################
 	#set SAF to FALSE while restoring to default when the function is finished
 	SAF = getOption("stringsAsFactors")
