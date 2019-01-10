@@ -49,10 +49,8 @@ matCorr <- function(matA, corrType, use = "pairwise.complete.obs", matB = NULL, 
 
 		}
 		if(corrType %in% "mutualinformation"){
-			matA_discrete = discretizeDF(data.frame(matA), 
-			                                     default=list("method"="interval", 
-			                                                  "breaks"=k))
-			corrs = infotheo::mutinformation(matA_discrete)
+			##EXPERIMENTAL - assume already discrete
+			corrs = infotheo::mutinformation(data.frame(matA, stringsAsFactors=TRUE)) ##assume it is already a discrete matrix
 			
 		}
 		if(corrType %in% "bicor"){
@@ -92,9 +90,9 @@ matCorr <- function(matA, corrType, use = "pairwise.complete.obs", matB = NULL, 
 
 		}
 		if(corrType %in% "mutualinformation"){
-			#EXPERIMENTAL
-			df1 = matA
-			df2 = matB
+			#EXPERIMENTAL - assume already discrete
+			df1 = data.frame(matA, stringsAsFactors=TRUE) ## WAO, there is a use for this after all...
+			df2 = data.frame(matB, stringsAsFactors=TRUE) ## WAOWAO
 
 			mi_df_2mat = matrix(data=NA,nrow=ncol(df1),ncol=ncol(df2))
 			rownames(mi_df_2mat) = colnames(df1)
@@ -102,9 +100,7 @@ matCorr <- function(matA, corrType, use = "pairwise.complete.obs", matB = NULL, 
 
 			for(col1 in 1:length(colnames(df1))){
 			  for(col2 in col1:length(colnames(df2))){
-			    x_dis = discretize(x=as.numeric(df1[,col1]), method="interval", breaks=k)
-			    y_dis = discretize(x=as.numeric(df2[,col2]), method="interval", breaks=k)
-			    mi_df_2mat[col1,col2] = infotheo::mutinformation(x_dis,y_dis)
+			    mi_df_2mat[col1,col2] = infotheo::mutinformation(df1[,col1],df2[,col2])
 			    mi_df_2mat[col2,col1] = mi_df_2mat[col1,col2]
 			  }
 			}

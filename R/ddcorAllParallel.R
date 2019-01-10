@@ -34,6 +34,7 @@
 #' @param testJob Test one job before running it? Default = FALSE
 #' @param k When running in MI mode, the number of intervals to discretize the data into before calculating mutual information. Default = 5.
 #' @param k_iter_max When running in MI mode, the number of iterations to determine the k-clusters for discretization before calculating mutual information. Default = 10. 
+#' @param chunkSize Execute multiple splits sequentially on each node. Default = 1 (false)
 #' @return Returns whether all jobs successfully executed or not. Output is in the output file.
 #' @export
 
@@ -57,7 +58,7 @@ ddcorAllParallel <- function(inputMat, design, compare, outputFile,
 	dCorAvgMethod = "median", signType = "none", oneSidedPVal = FALSE, 
 	perBatch = 10, coresPerJob = 2, timePerJob = 60, memPerJob = 2000, 
 	batchConfig = system.file("config/batchConfig_Zhang.R",package="DGCA"), batchDir = "batchRegistry",
-	batchWarningLevel = 0, batchSeed = 12345, maxRetries = 3, testJob=FALSE, k=5,k_iter_max=10){
+	batchWarningLevel = 0, batchSeed = 12345, maxRetries = 3, testJob=FALSE, k=5,k_iter_max=10, chunkSize=1){
 
 	## REMOVED PARAMETERS 
 	
@@ -80,7 +81,7 @@ ddcorAllParallel <- function(inputMat, design, compare, outputFile,
 
 	## Create simple registry:
 	reg <- batchtools::makeExperimentRegistry(file.dir=batchDir, conf.file=batchConfig)
-	res = list(measure.memory = TRUE,walltime=timePerJob,memory=memPerJob,cores=coresPerJob)
+	res = list(measure.memory = TRUE,walltime=timePerJob,memory=memPerJob,cores=coresPerJob,chunks.as.array.jobs = TRUE)
 
 	matrix_part <- function(job,data,startA, endA, startB, endB){
 	    blockA = data$input[startA:endA,] #get first chunk of genes to compare
@@ -152,7 +153,9 @@ ddcorAllParallel <- function(inputMat, design, compare, outputFile,
 
 	message("Submitting jobs to cluster...")
 	message(Sys.time())
-	batchtools::submitJobs(resources=res)
+    ids = batchtools::findExperiments(algo.name = "dgca")
+    ids = ids[, chunk := batchtools::chunk(job.id, chunk.size = chunkSize)] #chunk size
+	batchtools::submitJobs(ids=ids, resources=res)
 	
 	message("Waiting for jobs to complete...")
 	message(Sys.time())
