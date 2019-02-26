@@ -10,15 +10,25 @@ The goal of DGCA is to calculate differential correlations across conditions.
 
 It simplifies the process of seeing whether two correlations are different without having to rely solely on parametric assumptions by leveraging non-parametric permutation tests and adjusting the resulting empirical p-values for multiple corrections using the qvalue R package.
 
-It also has several other options including calculating the average differential correlation between groups of genes, gene ontology enrichment analyses of the results, and differential correlation network identification via integration with MEGENA.  
+It also has several other options including calculating the average differential correlation between groups of genes, gene ontology enrichment analyses of the results, and differential correlation network identification via integration with MEGENA. 
+
+Changes from CRAN version (1.0.2):
+
+* Can handle a very large number of features (20k -> 1 million or more) by splitting up correlation matrix into sections and submitting them to separate nodes as batch jobs or sequentially on a low-memory machine
+* Collects results automatically and writes them out in batches
+* Parallel correlation matrix and permutation matrix generation on each node (handles many permutations)
+* Speed improvements, even in single core mode
+* Fastest update yet – completed Lei’s F.AD vs M.AD RNA+CNV dataset in 2.5 hours (whereas previously would have taken ~35.7 days in single-threaded mode)
+* Bugfix in correlation cutoff function: did not properly calculate p-values when R2 is < -0.99 (drops significant correlations or raises errors)
+* Necessary for discrete data like CNVs, genetics, clinical features
+* Bugfix in gene filtering: possible divide by zero for discrete features if the mean of all observations is exactly zero
+* Bugfix in qvalue function: automatically picks the best lambda sequence for the input data (previous versions would not report lambda if there were errors)
+* Bugfix where DGCA would crash during the empirical p-value calculation step if there were too many elements
+* Can adjust non-empirical p-values by q-value in adjustPVals (Storey et al., 2002)
+* Fuzzy permutation adjustment of p-values, especially useful for discrete data like CNVs (Yang et al., Nat Sci Rep 2016)
+
 
 ## Installation
-
-You can install DGCA from CRAN with:
-
-```R
-install.packages("DGCA")
-```
 
 You can install the development version of DGCA from github with:
 
