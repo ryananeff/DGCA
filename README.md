@@ -15,12 +15,12 @@ It also has several other options including calculating the average differential
 Changes from CRAN version (1.0.2):
 
 * Can handle a very large number of features (20k -> 1 million or more) by splitting up correlation matrix into sections and submitting them to separate nodes as batch jobs or sequentially on a low-memory machine
-* Collects results automatically and writes them out in batches
+  * Collects results automatically and writes them out in batches
 * Parallel correlation matrix and permutation matrix generation on each node (handles many permutations)
 * Speed improvements, even in single core mode
 * Fastest update yet – completed Lei’s F.AD vs M.AD RNA+CNV dataset in 2.5 hours (whereas previously would have taken ~35.7 days in single-threaded mode)
 * Bugfix in correlation cutoff function: did not properly calculate p-values when R2 is < -0.99 (drops significant correlations or raises errors)
-* Necessary for discrete data like CNVs, genetics, clinical features
+  * Necessary for discrete data like CNVs, genetics, clinical features
 * Bugfix in gene filtering: possible divide by zero for discrete features if the mean of all observations is exactly zero
 * Bugfix in qvalue function: automatically picks the best lambda sequence for the input data (previous versions would not report lambda if there were errors)
 * Bugfix where DGCA would crash during the empirical p-value calculation step if there were too many elements
