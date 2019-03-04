@@ -58,7 +58,7 @@ ddcorAllParallel <- function(inputMat, design, compare, outputFile,
 	dCorAvgMethod = "median", signType = "none", oneSidedPVal = FALSE, 
 	perBatch = 10, coresPerJob = 2, timePerJob = 60, memPerJob = 2000, 
 	batchConfig = system.file("config/batchConfig_Zhang.R",package="DGCA"), batchDir = "batchRegistry",
-	batchWarningLevel = 0, batchSeed = 12345, maxRetries = 3, testJob=FALSE, k=5,k_iter_max=10, chunkSize=1){
+	batchWarningLevel = 0, batchSeed = 12345, maxRetries = 3, testJob=FALSE, k=5,k_iter_max=10, chunkSize=FALSE){
 
 	## REMOVED PARAMETERS 
 	
@@ -154,7 +154,9 @@ ddcorAllParallel <- function(inputMat, design, compare, outputFile,
 	message("Submitting jobs to cluster...")
 	message(Sys.time())
     ids = batchtools::findExperiments(algo.name = "dgca")
-    ids = ids[, chunk := batchtools::chunk(job.id, chunk.size = chunkSize)] #chunk size
+    if(!identical(chunkSize,FALSE)){
+        ids = ids[, chunk := batchtools::chunk(job.id, chunk.size = chunkSize)] #chunk size
+    }
 	batchtools::submitJobs(ids=ids, resources=res)
 	
 	message("Waiting for jobs to complete...")
