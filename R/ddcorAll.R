@@ -165,8 +165,13 @@ ddcorAll <- function(inputMat, design, compare, inputMatB = NULL, splitSet = NUL
 		pValArrB = matrix(NA,nrow=nrow(corrsB),ncol=ncol(corrsB))
 		rownames(pValArrA) = rownames(corrsA)
 		rownames(pValArrB) = rownames(corrsB)
-		pValArrA[upper.tri(pValArrA)] = pvalsA
-		pValArrB[upper.tri(pValArrB)] = pvalsB
+		if(secondMat==FALSE){
+			pValArrA[upper.tri(pValArrA)] = pvalsA
+			pValArrB[upper.tri(pValArrB)] = pvalsB
+		} else {
+			pValArrA[upper.tri(pValArrA,diag=TRUE)] = pvalsA
+			pValArrB[upper.tri(pValArrB,diag=TRUE)] = pvalsB
+		}
 		ddcor_res@corPvalA = pValArrA
 		ddcor_res@corPvalB = pValArrB
 

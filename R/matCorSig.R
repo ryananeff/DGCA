@@ -11,8 +11,13 @@ matCorSig <- function(corrs, nsamp, secondMat = FALSE){
 		pvals = matrix(NA, nrow = nrow(corrs), ncol = ncol(corrs))
 		#pvals_before <<- pvals
 		#corrs_before <<- corrs
-		corrs = corrs[upper.tri(corrs)] #computed correlation matrix
-		nsamp = nsamp[upper.tri(nsamp)] #number of samples used per call in the correlation matrix
+		if(secondMat==FALSE){
+			corrs = corrs[upper.tri(corrs)] #computed correlation matrix
+			nsamp = nsamp[upper.tri(nsamp)] #number of samples used per call in the correlation matrix
+		} else {
+			corrs = corrs[upper.tri(corrs,diag=TRUE)] #computed correlation matrix
+			nsamp = nsamp[upper.tri(nsamp,diag=TRUE)] #number of samples used per call in the correlation matrix
+		}
 		deg_freedom = nsamp - 2 #degrees of freedom
 		deg_freedom = deg_freedom[1]
 		in_pt = (abs(corrs) * sqrt(deg_freedom) / sqrt(1 - corrs^2))
@@ -20,7 +25,11 @@ matCorSig <- function(corrs, nsamp, secondMat = FALSE){
 		deg_freedom <<- deg_freedom
 		pvals_upper = 2 * (1 - pt(in_pt, deg_freedom))
 		#### pvals_upper = 2 * (1 - pt(in_pt, df)) # pt gives the distribution function
-		pvals[upper.tri(pvals)] = pvals_upper 
+		if(secondMat==FALSE){
+			pvals[upper.tri(pvals)] = pvals_upper 
+		} else {
+			pvals[upper.tri(pvals,diag=TRUE)] = pvals_upper 
+		}
 		pvals[abs(corrs) == 1] = 0
 
 	} else {
@@ -48,8 +57,13 @@ matCorSig.fuzz <- function(corrs, nsamp, secondMat = FALSE, epsilon=1e-6){
 		pvals = matrix(NA, nrow = nrow(corrs), ncol = ncol(corrs))
 		#pvals_before <<- pvals
 		#corrs_before <<- corrs
-		corrs = corrs[upper.tri(corrs)] #computed correlation matrix
-		nsamp = nsamp[upper.tri(nsamp)] #number of samples used per call in the correlation matrix
+		if(secondMat==FALSE){
+			corrs = corrs[upper.tri(corrs)] #computed correlation matrix
+			nsamp = nsamp[upper.tri(nsamp)] #number of samples used per call in the correlation matrix
+		} else {
+			corrs = corrs[upper.tri(corrs,diag=TRUE)] #computed correlation matrix
+			nsamp = nsamp[upper.tri(nsamp,diag=TRUE)] #number of samples used per call in the correlation matrix
+		}
 		deg_freedom = nsamp - 2 #degrees of freedom
 		deg_freedom = deg_freedom[1]
 		in_pt = (abs(corrs) * sqrt(deg_freedom) / sqrt(1 - corrs^2))
@@ -57,8 +71,13 @@ matCorSig.fuzz <- function(corrs, nsamp, secondMat = FALSE, epsilon=1e-6){
 		deg_freedom <<- deg_freedom
 		pvals_upper = 2 * (1 - pt(in_pt, deg_freedom))
 		#### pvals_upper = 2 * (1 - pt(in_pt, df)) # pt gives the distribution function
-		pvals[upper.tri(pvals)] = pvals_upper 
+		if(secondMat==FALSE){
+			pvals[upper.tri(pvals)] = pvals_upper 
+		} else {
+			pvals[upper.tri(pvals,diag=TRUE)] = pvals_upper 
+		}
 		pvals[abs(corrs) == 1] = 0
+
 
 	} else {
 

@@ -73,12 +73,11 @@ matCorr <- function(matA, corrType, use = "pairwise.complete.obs", matB = NULL, 
 		if(corrType %in% "spearman"){
 
 			#speed hack 10/23/18
-			colnames_matA = colnames(matA)
-			matA = t(apply(matA,1,function(x) rank(x,ties="random")))
-			colnames(matA) = colnames_matA
-			colnames_matB = colnames(matB)
-			matB = t(apply(matB,1,function(x) rank(x,ties="random")))
-			colnames(matB) = colnames_matB
+			matA = t(matA)
+			matA = apply(matA,1,function(x) rank(x,ties="random"))
+			
+			matB = t(matB)
+			matB = apply(matB,1,function(x) rank(x,ties="random"))
             
             corrs = tryCatch({
                 WGCNA::cor(matA,matB,use=use,method="pearson")
@@ -98,10 +97,14 @@ matCorr <- function(matA, corrType, use = "pairwise.complete.obs", matB = NULL, 
 			rownames(mi_df_2mat) = colnames(df1)
 			colnames(mi_df_2mat) = colnames(df2)
 
+			df1_out <<-df1
+			df2_out <<-df2
+			mi_df_2mat_out <<- mi_df_2mat
+
 			for(col1 in 1:length(colnames(df1))){
 			  for(col2 in col1:length(colnames(df2))){
 			    mi_df_2mat[col1,col2] = infotheo::mutinformation(df1[,col1],df2[,col2])
-			    mi_df_2mat[col2,col1] = mi_df_2mat[col1,col2]
+			    #mi_df_2mat[col2,col1] = mi_df_2mat[col1,col2]
 			  }
 			}
 
