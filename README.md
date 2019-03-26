@@ -1,10 +1,4 @@
-[![Travis-CI Build Status](https://travis-ci.org/andymckenzie/DGCA.svg?branch=master)](https://travis-ci.org/andymckenzie/DGCA)
-
-[![CRAN\_Status\_Badge](http://www.r-pkg.org/badges/version/ggplot2)](https://cran.r-project.org/package=DGCA)
-[![Rdoc](http://www.rdocumentation.org/badges/version/DGCA)](http://www.rdocumentation.org/packages/DGCA)
-[![Downloads](http://cranlogs.r-pkg.org/badges/grand-total/DGCA)](http://cranlogs.r-pkg.org/badges/grand-total/DGCA)
-
-# DGCA
+# DGCA (2.0 version)
 
 The goal of DGCA is to calculate differential correlations across conditions.
 
