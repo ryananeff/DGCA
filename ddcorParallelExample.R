@@ -13,14 +13,14 @@ data(design_mat) #loads design_mat
 
 ######################
 
-split = 5									#number of times to split the input. This means split**2 comparisons will be run (see below)
-nPerms = 15									#perms to run
-outputfile = "output.test.txt" 				#output file (TSV)
+split = 5		#number of times to split the input. This means split**2 comparisons will be run (see below)
+nPerms = 15		#permutations to run
+outputfile = "output.test.txt" 		#output file (TSV)
 input_data = darmanis 						#input dataframe
 design_mat = design_mat 					#input design matrix
-groups = c("oligodendrocyte", "neuron")		#groups
+groups = c("oligodendrocyte", "neuron")		#groups to examine
 num_cores = 2								#cores per worker
-corrType="pearson"							#correlation type (pearson, spearman)
+corrType="pearson"					#correlation type (pearson, spearman, bicor, mutualinformation)
 
 ######################
 
