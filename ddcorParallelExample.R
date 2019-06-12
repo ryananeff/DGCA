@@ -1,11 +1,10 @@
 rm(list = ls(all.names = TRUE))
 set.seed(12345)
 
-library("DGCA",lib="~/.RlibDGCA")
+library("DGCA",lib="~/.Rlib")
 
 options(stringsAsFactors = FALSE)
 
-message("DGCA batch tools package! hooray!")
 message("loading data")
 message(Sys.time())
 
@@ -21,12 +20,12 @@ input_data = darmanis 						#input dataframe
 design_mat = design_mat 					#input design matrix
 groups = c("oligodendrocyte", "neuron")		#groups
 num_cores = 2								#cores per worker
-corrType="spearman"							#correlation type (pearson, spearman)
+corrType="pearson"							#correlation type (pearson, spearman)
 
 ######################
 
 ddcorAllParallel(input_data, design_mat, groups, outputfile,
-                 sigOutput=TRUE,corrType="spearman",adjust="perm",
+                 sigOutput=TRUE,corrType=corrType,adjust="perm",
                  nPerms=nPerms,verbose=TRUE,perBatch=split,
                  coresPerJob=num_cores,batchDir="minimal",testJob=TRUE,
-                 memPerJob = 500,timePerJob=2)
+                 memPerJob = 10000,timePerJob=60)
